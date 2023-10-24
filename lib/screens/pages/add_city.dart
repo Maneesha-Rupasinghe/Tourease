@@ -2,17 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class ChooseCity extends StatelessWidget {
+class ChooseCity extends StatefulWidget {
+  final List<String> selectedCities;
+
+  ChooseCity({required this.selectedCities});
+
+  @override
+  _ChooseCityState createState() => _ChooseCityState(selectedCities);
+}
+
+class _ChooseCityState extends State<ChooseCity> {
+  final List<String> selectedCities;
+  _ChooseCityState(this.selectedCities);
+
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        CityButton(cityName: 'Colombo'),
-        CityButton(cityName: 'Matara'),
-        CityButton(cityName: 'Galle'),
-        CityButton(cityName: 'Kandy'),
-        CityButton(cityName: 'Jaffna'),
+        CityButton(cityName: 'Colombo', isSelected: selectedCities.contains('Colombo')),
+        CityButton(cityName: 'Matara', isSelected: selectedCities.contains('Matara')),
+        CityButton(cityName: 'Galle', isSelected: selectedCities.contains('Galle')),
+        CityButton(cityName: 'Kandy', isSelected: selectedCities.contains('Kandy')),
+        CityButton(cityName: 'Jaffna', isSelected: selectedCities.contains('Jaffna')),
       ],
     );
   }
@@ -20,21 +32,25 @@ class ChooseCity extends StatelessWidget {
 
 class CityButton extends StatefulWidget {
   final String cityName;
+  final bool isSelected;
 
-  CityButton({required this.cityName});
+  CityButton({required this.cityName, required this.isSelected});
 
   @override
-  _CityButtonState createState() => _CityButtonState();
+  _CityButtonState createState() => _CityButtonState(isSelected);
 }
 
 class _CityButtonState extends State<CityButton> {
-  bool isSelected = false;
+  bool isSelected;
+  
+  _CityButtonState(this.isSelected);
 
   void toggleSelection() {
     setState(() {
       isSelected = !isSelected;
     });
   }
+
 
   void saveCityToFirestore() {
     FirebaseAuth auth = FirebaseAuth.instance;
