@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:tourease/screens/pages/weather_util.dart';
 
 class tripPlan extends StatefulWidget {
   const tripPlan({Key? key}) : super(key: key);
@@ -165,28 +166,30 @@ class _tripPlanState extends State<tripPlan> {
                       : 'Select a Date',
                 ),
 
-                Container(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: (destination.length / 3).ceil(),
-                    itemBuilder: (BuildContext context, int index) {
-                      final startIndex = index * 3;
-                      final endIndex = (startIndex + 3 < destination.length)
-                          ? startIndex + 3
-                          : destination.length;
-                      final rowCities =
-                          destination.sublist(startIndex, endIndex);
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: rowCities.map((city) {
-                          return Expanded(
-                            child: ListTile(
-                              title: Text(city),
-                            ),
-                          );
-                        }).toList(),
-                      );
-                    },
+                SingleChildScrollView(
+                  child: Container(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: (destination.length / 3).ceil(),
+                      itemBuilder: (BuildContext context, int index) {
+                        final startIndex = index * 3;
+                        final endIndex = (startIndex + 3 < destination.length)
+                            ? startIndex + 3
+                            : destination.length;
+                        final rowCities =
+                            destination.sublist(startIndex, endIndex);
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: rowCities.map((city) {
+                            return Expanded(
+                              child: ListTile(
+                                title: Text(city),
+                              ),
+                            );
+                          }).toList(),
+                        );
+                      },
+                    ),
                   ),
                 ),
 
@@ -212,31 +215,118 @@ class _tripPlanState extends State<tripPlan> {
                 //     }).toList(),
                 //   ),
 
-                SizedBox(
-                  height: 400,
-                  child: PageView(
-                    scrollDirection: Axis.horizontal,
-                    children: _result.map((subList) {
-                      return Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black),
-                        ),
-                        padding: EdgeInsets.all(8.0),
-                        margin: EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: subList.map((element) {
-                            return Padding(
-                              padding: const EdgeInsets.all(25.0),
-                              child: Align(
-                                alignment: Alignment.centerLeft,
-                                child: Text(element),
+                // SizedBox(
+                //   height: 400,
+                //   child: PageView(
+                //     scrollDirection: Axis.horizontal,
+                //     children: _result.map((subList) {
+                //       return Container(
+                //         decoration: BoxDecoration(
+                //           border: Border.all(color: Colors.black),
+                //         ),
+                //         padding: EdgeInsets.all(8.0),
+                //         margin: EdgeInsets.symmetric(horizontal: 8.0),
+                //         child: Column(
+                //           crossAxisAlignment: CrossAxisAlignment.start,
+                //           children: subList.map((element) {
+                //             return Padding(
+                //               padding: const EdgeInsets.all(25.0),
+                //               child: Align(
+                //                 alignment: Alignment.centerLeft,
+                //                 child: Text(element),
+                //               ),
+                //             );
+                //           }).toList(),
+                //         ),
+                //       );
+                //     }).toList(),
+                //   ),
+                // ),
+                SingleChildScrollView(
+                  child: SizedBox(
+                    height: 500,
+                    child: PageView(
+                      scrollDirection: Axis.horizontal,
+                      children: _result.map((subList) {
+                        return Container(
+                          
+                          decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 189, 218, 190),
+                            border: Border.all(color: Colors.black),
+                          ),
+                          padding: EdgeInsets.all(8.0),
+                          margin: EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: List.generate(6, (index) {
+                                  final currentDate = DateTime.now();
+                                  final nextDate =
+                                      currentDate.add(Duration(days: index));
+
+                                  final formattedDate =
+                                      "${nextDate.day.toString().padLeft(2, '0')}/${nextDate.month.toString().padLeft(2, '0')}";
+
+                                  return Container(
+                                    padding: EdgeInsets.all(10.0),
+                                    child: Text(formattedDate),
+                                  );
+                                }),
                               ),
-                            );
-                          }).toList(),
-                        ),
-                      );
-                    }).toList(),
+                              ...subList.map((element) {
+                                return FutureBuilder<List<String>>(
+                                  future: WeatherUtil.getWeatherData(element),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.waiting) {
+                                      return Text(
+                                          "Fetching weather data for $element...");
+                                    } else if (snapshot.hasError) {
+                                      return Text(
+                                          "Error fetching weather data for $element: ${snapshot.error}");
+                                    } else if (snapshot.hasData) {
+                                      final city = element;
+                                      final iconIds =
+                                          snapshot.data!; // List of icon IDs
+
+                                      return Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(city),
+                                          SizedBox(height: 10),
+                                          Row(
+                                            children: iconIds.map((iconId) {
+                                              return Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Image.network(
+                                                  'https://openweathermap.org/img/wn/$iconId.png',
+                                                  width: 40,
+                                                  height: 40,
+                                                  errorBuilder: (context, error,
+                                                      stackTrace) {
+                                                    return Icon(Icons.error);
+                                                  },
+                                                ),
+                                              );
+                                            }).toList(),
+                                          ),
+                                        ],
+                                      );
+                                    } else {
+                                      return Text(
+                                          "No weather data available for $element");
+                                    }
+                                  },
+                                );
+                              }),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                    ),
                   ),
                 )
               ],
