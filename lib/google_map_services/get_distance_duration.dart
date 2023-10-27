@@ -1,5 +1,13 @@
 import 'location_service/location_service.dart';
 
+// List<String> places = [
+//     "Colombo",
+//     "Kurunegala",
+//     "Anuradhapura",
+//     "Trincomalee",
+//     "jaffna"
+//   ];
+
 class DistanceAndDuration {
   Map<String, String> distanceMap = {}; // Store distances
   Map<String, String> durationMap = {}; // Store durations
@@ -7,15 +15,7 @@ class DistanceAndDuration {
   int totalDuration = 0;
   List<Future<void>> loadPlaceFutures = [];
 
-  List<String> places = [
-    "Colombo",
-    "Kurunegala",
-    "Anuradhapura",
-    "Trincomalee",
-    "jaffna"
-  ];
-
-  Future<void> calculateTotalDistanceAndDuration() async {
+  Future<void> calculateTotalDistanceAndDuration(List<String> places) async {
     // Create a list of Futures for all the _loadPlace calls
     for (var i = 0; i < places.length - 1; i++) {
       loadPlaceFutures.add(_loadPlace(places[i], places[i + 1]));

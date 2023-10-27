@@ -6,32 +6,34 @@ import 'location_service/location_service.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 
 class DrawPath extends StatefulWidget {
-  const DrawPath({super.key});
+  final List<String> places;
+
+  DrawPath({Key? key, required this.places}) : super(key: key);
 
   @override
-  State<DrawPath> createState() => DrawPathState();
+  State<DrawPath> createState() => DrawPathState(places: places);
 }
 
 class DrawPathState extends State<DrawPath> {
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
-
   final Set<Polyline> _polylines = Set<Polyline>();
-
   int _polylineIdCounter = 1;
+  final List<String> places;
+  DrawPathState({required this.places});
 
   static const CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(7.8731, 80.7718),
     zoom: 7.9,
   );
 
-  List<String> places = [
-    "Colombo",
-    "Kurunegala",
-    "Anuradhapura",
-    "Trincomalee",
-    "jaffna"
-  ];
+  // List<String> places = [
+  //   "Colombo",
+  //   "Kurunegala",
+  //   "Anuradhapura",
+  //   "Trincomalee",
+  //   "jaffna"
+  // ];
 
   @override
   void initState() {
