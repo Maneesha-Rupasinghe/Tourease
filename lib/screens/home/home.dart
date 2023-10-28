@@ -65,263 +65,280 @@ class _HomeState extends State<Home> {
           )
         ],
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: TextField(
-                autofocus: true, //maximum text length
-                keyboardType: TextInputType.name, //can only type numbers
-                style: TextStyle(fontSize: 20),
-                controller: controller1,
-                onSubmitted: (text) {
-                  name = controller1.text;
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) {
-                        return DestinationPage(name);
+      body: Container(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 20, right: 20),
+                child: TextField(
+                  autofocus: true, //maximum text length
+                  keyboardType: TextInputType.name, //can only type numbers
+                  style: TextStyle(fontSize: 20),
+                  controller: controller1,
+                  onSubmitted: (text) {
+                    name = controller1.text;
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) {
+                          return DestinationPage(name);
+                        },
+                      ),
+                    );
+                  },
+                  decoration: InputDecoration(
+                    filled: true,
+                    prefixIcon: Icon(Icons.search),
+                    suffixIcon: IconButton(
+                      icon: Icon(Icons.close),
+                      onPressed: () {
+                        controller1.text = '';
                       },
                     ),
-                  );
-                },
-                decoration: InputDecoration(
-                  filled: true,
-                  prefixIcon: Icon(Icons.search),
-                  suffixIcon: IconButton(
-                    icon: Icon(Icons.close),
-                    onPressed: () {
-                      controller1.text = '';
-                    },
                   ),
                 ),
               ),
-            ),
-            SizedBox(
-              height: 200,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                height: 195,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.05,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
                   children: [
-                    Row(
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            name = 'KANDY';
-                            Navigator.of(context)
-                                .push(MaterialPageRoute(builder: (_) {
-                              return DestinationPage(name);
-                            }));
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(2),
-                            child: Container(
-                              height: 200,
-                              width: 150,
-                              color: Color.fromARGB(255, 213, 198, 154),
-                              margin: EdgeInsets.only(right: 10),
-                              child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        color: Color.fromARGB(218, 146, 98, 10),
-                                      ),
-                                      padding: EdgeInsets.only(left: 1.8),
-                                      margin: EdgeInsets.only(top: 3),
-                                      child: Text(
-                                        'KANDY',
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          color: Colors.white70,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(5),
-                                      child: Container(
-                                          height: 155,
-                                          child: Image(
-                                              image: AssetImage(
-                                            'assests/kandy.png',
-                                          ))),
-                                    )
-                                  ]),
-                            ),
+                    Container(
+                      height: MediaQuery.of(context).size.height * 0.6,
+                      color: const Color.fromARGB(255, 240, 240, 240),
+                      child: ListView(
+                        scrollDirection: Axis.horizontal,
+                        children: [
+                          Row(
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  name = 'KANDY';
+                                  Navigator.of(context)
+                                      .push(MaterialPageRoute(builder: (_) {
+                                    return DestinationPage(name);
+                                  }));
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.all(2),
+                                  child: Container(
+                                    height: 200,
+                                    width: 150,
+                                    color: Color.fromARGB(255, 213, 198, 154),
+                                    margin: EdgeInsets.only(right: 10),
+                                    child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              color: Color.fromARGB(
+                                                  218, 146, 98, 10),
+                                            ),
+                                            padding: EdgeInsets.only(left: 1.8),
+                                            margin: EdgeInsets.only(top: 3),
+                                            child: Text(
+                                              'KANDY',
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                                color: Colors.white70,
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.all(5),
+                                            child: Container(
+                                                height: 155,
+                                                child: Image(
+                                                    image: AssetImage(
+                                                  'assests/kandy.png',
+                                                ))),
+                                          )
+                                        ]),
+                                  ),
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  name = 'GALLE';
+                                  Navigator.of(context)
+                                      .push(MaterialPageRoute(builder: (_) {
+                                    return DestinationPage(name);
+                                  }));
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.all(2),
+                                  child: Container(
+                                    height: 200,
+                                    width: 150,
+                                    color: Color.fromARGB(255, 213, 198, 154),
+                                    margin: EdgeInsets.only(right: 10),
+                                    child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              color: Color.fromARGB(
+                                                  218, 146, 98, 10),
+                                            ),
+                                            padding: EdgeInsets.only(left: 1.8),
+                                            margin: EdgeInsets.only(top: 3),
+                                            child: Text(
+                                              'GALLE',
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                                color: Colors.white70,
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.all(5),
+                                            child: Container(
+                                                height: 155,
+                                                child: Image(
+                                                    image: AssetImage(
+                                                  'assests/galle.png',
+                                                ))),
+                                          )
+                                        ]),
+                                  ),
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  name = 'ANURADHAPURA';
+                                  Navigator.of(context)
+                                      .push(MaterialPageRoute(builder: (_) {
+                                    return DestinationPage(name);
+                                  }));
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.all(2),
+                                  child: Container(
+                                    height: 200,
+                                    width: 150,
+                                    color: Color.fromARGB(255, 213, 198, 154),
+                                    margin: EdgeInsets.only(right: 10),
+                                    child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              color: Color.fromARGB(
+                                                  218, 146, 98, 10),
+                                            ),
+                                            padding: EdgeInsets.only(left: 1.8),
+                                            margin: EdgeInsets.only(top: 3),
+                                            child: Text(
+                                              'ANURADAPURA',
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                                color: Colors.white70,
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.all(5),
+                                            child: Container(
+                                                height: 155,
+                                                child: Image(
+                                                    image: AssetImage(
+                                                  'assests/anuradapura.png',
+                                                ))),
+                                          )
+                                        ]),
+                                  ),
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  name = 'COLOMBO';
+                                  Navigator.of(context)
+                                      .push(MaterialPageRoute(builder: (_) {
+                                    return DestinationPage(name);
+                                  }));
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.all(2),
+                                  child: Container(
+                                    height: 200,
+                                    width: 150,
+                                    color: Color.fromARGB(255, 213, 198, 154),
+                                    margin: EdgeInsets.only(right: 10),
+                                    child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              color: Color.fromARGB(
+                                                  218, 146, 98, 10),
+                                            ),
+                                            padding: EdgeInsets.only(left: 1.8),
+                                            margin: EdgeInsets.only(top: 3),
+                                            child: Text(
+                                              'COLOMBO',
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                                color: Colors.white70,
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.all(5),
+                                            child: Container(
+                                                height: 155,
+                                                child: Image(
+                                                    image: AssetImage(
+                                                  'assests/colombo.png',
+                                                ))),
+                                          )
+                                        ]),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            name = 'GALLE';
-                            Navigator.of(context)
-                                .push(MaterialPageRoute(builder: (_) {
-                              return DestinationPage(name);
-                            }));
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(2),
-                            child: Container(
-                              height: 200,
-                              width: 150,
-                              color: Color.fromARGB(255, 213, 198, 154),
-                              margin: EdgeInsets.only(right: 10),
-                              child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        color: Color.fromARGB(218, 146, 98, 10),
-                                      ),
-                                      padding: EdgeInsets.only(left: 1.8),
-                                      margin: EdgeInsets.only(top: 3),
-                                      child: Text(
-                                        'GALLE',
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          color: Colors.white70,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(5),
-                                      child: Container(
-                                          height: 155,
-                                          child: Image(
-                                              image: AssetImage(
-                                            'assests/galle.png',
-                                          ))),
-                                    )
-                                  ]),
-                            ),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            name = 'ANURADHAPURA';
-                            Navigator.of(context)
-                                .push(MaterialPageRoute(builder: (_) {
-                              return DestinationPage(name);
-                            }));
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(2),
-                            child: Container(
-                              height: 200,
-                              width: 150,
-                              color: Color.fromARGB(255, 213, 198, 154),
-                              margin: EdgeInsets.only(right: 10),
-                              child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        color: Color.fromARGB(218, 146, 98, 10),
-                                      ),
-                                      padding: EdgeInsets.only(left: 1.8),
-                                      margin: EdgeInsets.only(top: 3),
-                                      child: Text(
-                                        'ANURADAPURA',
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          color: Colors.white70,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(5),
-                                      child: Container(
-                                          height: 155,
-                                          child: Image(
-                                              image: AssetImage(
-                                            'assests/anuradapura.png',
-                                          ))),
-                                    )
-                                  ]),
-                            ),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            name = 'COLOMBO';
-                            Navigator.of(context)
-                                .push(MaterialPageRoute(builder: (_) {
-                              return DestinationPage(name);
-                            }));
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(2),
-                            child: Container(
-                              height: 200,
-                              width: 150,
-                              color: Color.fromARGB(255, 213, 198, 154),
-                              margin: EdgeInsets.only(right: 10),
-                              child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        color: Color.fromARGB(218, 146, 98, 10),
-                                      ),
-                                      padding: EdgeInsets.only(left: 1.8),
-                                      margin: EdgeInsets.only(top: 3),
-                                      child: Text(
-                                        'COLOMBO',
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          color: Colors.white70,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(5),
-                                      child: Container(
-                                          height: 155,
-                                          child: Image(
-                                              image: AssetImage(
-                                            'assests/colombo.png',
-                                          ))),
-                                    )
-                                  ]),
-                            ),
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ],
                 ),
               ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        ChooseCity(selectedCities: selectedCities),
-                  ),
-                );
-              },
-              child: const Text("Add City"),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => tripPlan(),
-                  ),
-                );
-              },
-              child: const Text("Trip plan"),
-            ),
-          ],
+              // ElevatedButton(
+              //   onPressed: () {
+              //     Navigator.of(context).push(
+              //       MaterialPageRoute(
+              //         builder: (context) =>
+              //             ChooseCity(selectedCities: selectedCities),
+              //       ),
+              //     );
+              //   },
+              //   child: const Text("Add City"),
+              // ),
+              // ElevatedButton(
+              //   onPressed: () {
+              //     Navigator.of(context).push(
+              //       MaterialPageRoute(
+              //         builder: (context) => tripPlan(),
+              //       ),
+              //     );
+              //   },
+              //   child: const Text("Trip plan"),
+              // ),
+            ],
+          ),
         ),
       ),
     );
