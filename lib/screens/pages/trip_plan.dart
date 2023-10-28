@@ -121,27 +121,27 @@ class _tripPlanState extends State<tripPlan> {
     }
   }
 
-Future<String> calculateTotalDistanceAndDuration(List<String> places) async {
-  Map<String, String> distanceMap = {}; // Store distances
-  Map<String, String> durationMap = {}; // Store durations
-  int totalDistance = 0;
-  int totalDuration = 0;
+  Future<String> calculateTotalDistanceAndDuration(List<String> places) async {
+    Map<String, String> distanceMap = {}; // Store distances
+    Map<String, String> durationMap = {}; // Store durations
+    int totalDistance = 0;
+    int totalDuration = 0;
 
-  for (var i = 0; i < places.length - 1; i++) {
-    var directions =
-        await LocationService().getDirections(places[i], places[i + 1]);
+    for (var i = 0; i < places.length - 1; i++) {
+      var directions =
+          await LocationService().getDirections(places[i], places[i + 1]);
 
-    distanceMap['${places[i]} to ${places[i + 1]}'] = directions['distance'];
-    durationMap['${places[i]} to ${places[i + 1]}'] = directions['duration'];
+      distanceMap['${places[i]} to ${places[i + 1]}'] = directions['distance'];
+      durationMap['${places[i]} to ${places[i + 1]}'] = directions['duration'];
 
-    int distance = int.parse(directions['distance'].replaceAll(" km", ""));
-    int duration = int.parse(directions['duration']);
-    totalDistance += distance;
-    totalDuration += duration;
+      int distance = int.parse(directions['distance'].replaceAll(" km", ""));
+      int duration = int.parse(directions['duration']);
+      totalDistance += distance;
+      totalDuration += duration;
+    }
+
+    return 'Total Distance: $totalDistance km\nTotal Duration: $totalDuration minutes';
   }
-
-  return 'Total Distance: $totalDistance km\nTotal Duration: $totalDuration minutes';
-}
 
   @override
   void initState() {
@@ -270,19 +270,22 @@ Future<String> calculateTotalDistanceAndDuration(List<String> places) async {
                                       final iconIds = snapshot.data!;
 
                                       return Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text(city),
                                           SizedBox(height: 10),
                                           Row(
                                             children: iconIds.map((iconId) {
                                               return Padding(
-                                                padding: const EdgeInsets.all(9.5),
+                                                padding:
+                                                    const EdgeInsets.all(9.5),
                                                 child: Image.network(
                                                   'https://openweathermap.org/img/wn/$iconId.png',
                                                   width: 40,
                                                   height: 40,
-                                                  errorBuilder: (context, error, stackTrace) {
+                                                  errorBuilder: (context, error,
+                                                      stackTrace) {
                                                     return Icon(Icons.error);
                                                   },
                                                 ),
@@ -292,16 +295,36 @@ Future<String> calculateTotalDistanceAndDuration(List<String> places) async {
                                         ],
                                       );
                                     } else {
-                                      return Text("No weather data available for $element");
+                                      return Text(
+                                          "No weather data available for $element");
                                     }
                                   },
                                 );
                               }),
                               // Display the elements from the localElements list
-                              for (var element in localElements) Text(element),
-                              
-                              
-                              
+                              ListView.builder(
+                                itemCount: localElements.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  final element = localElements[index];
+                                  return FutureBuilder<String>(
+                                    future: calculateTotalDistanceAndDuration(
+                                        [element]),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.waiting) {
+                                        return Text(
+                                            "Calculating distance and duration...");
+                                      } else if (snapshot.hasError) {
+                                        return Text("Error: ${snapshot.error}");
+                                      } else if (snapshot.hasData) {
+                                        return Text(snapshot.data!);
+                                      } else {
+                                        return Text("No data available");
+                                      }
+                                    },
+                                  );
+                                },
+                              ),
                             ],
                           ),
                         );
