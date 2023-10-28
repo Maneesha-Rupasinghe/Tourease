@@ -18,6 +18,7 @@ class DistanceAndDuration {
   Future<String> calculateTotalDistanceAndDuration(List<String> places) async {
     int totalDistance = 0;
     int totalDuration = 0;
+
     // Create a list of Futures for all the _loadPlace calls
 
     for (var i = 0; i < places.length - 1; i++) {
