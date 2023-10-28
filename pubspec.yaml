@@ -42,6 +42,7 @@ dependencies:
   google_maps_flutter: ^2.5.0
   flutter_polyline_points: ^2.0.0
   dart_date: ^1.2.2
+  firebase_pagination: ^3.0.0
 
 dev_dependencies:
   flutter_test:

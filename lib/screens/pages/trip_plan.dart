@@ -3,8 +3,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter/material.dart';
+import 'package:tourease/google_map_services/location_service/location_service.dart';
 import 'package:tourease/screens/pages/weather_util.dart';
+import 'package:tourease/google_map_services/get_distance_duration.dart';
 
 class tripPlan extends StatefulWidget {
   const tripPlan({Key? key}) : super(key: key);
@@ -23,19 +24,21 @@ class _tripPlanState extends State<tripPlan> {
   late DateTime fromDate = DateTime.now();
   late DateTime toDate = DateTime.now();
 
-  // Create a list to store the first and last elements
-  List<String> firstAndLastElements = [];
+  String? totalDistanceAndDuration;
+
+  final DistanceAndDuration distanceDuration = DistanceAndDuration();
+
   Future<void> _selectDate1(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(), // Initial date to show in the picker
-      firstDate: DateTime(2023), // The earliest selectable date
-      lastDate: DateTime(2025), // The latest selectable date
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2023),
+      lastDate: DateTime(2025),
     );
 
     if (picked != null && picked != fromDate) {
       setState(() {
-        fromDate = picked; // Update the selected date in your state
+        fromDate = picked;
       });
     }
   }
@@ -43,14 +46,14 @@ class _tripPlanState extends State<tripPlan> {
   Future<void> _selectDate2(BuildContext context) async {
     final DateTime? picked2 = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(), // Initial date to show in the picker
-      firstDate: DateTime(2023), // The earliest selectable date
-      lastDate: DateTime(2025), // The latest selectable date
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2023),
+      lastDate: DateTime(2025),
     );
 
     if (picked2 != null && picked2 != toDate) {
       setState(() {
-        toDate = picked2; // Update the selected date in your state
+        toDate = picked2;
       });
     }
   }
@@ -75,10 +78,10 @@ class _tripPlanState extends State<tripPlan> {
         _result = (responseData['possible_paths'] as List)
             .map((path) => (path as List).cast<String>())
             .toList();
-        print("Send successfull");
+        print("Send successful");
       });
     } else {
-      print("Error in send destinations");
+      print("Error in sending destinations");
     }
   }
 
@@ -97,16 +100,14 @@ class _tripPlanState extends State<tripPlan> {
           if (selectedCitiesData is List) {
             List<String> cities =
                 selectedCitiesData.map((city) => city.toString()).toList();
-            destination.addAll(cities); // Add the retrieved cities
+            destination.addAll(cities);
             return cities;
           }
         }
       }
 
-      // Handle the case where the user's document doesn't exist or the data is not in the expected format.
       return [];
     } catch (e) {
-      // Handle any errors that occur during the retrieval.
       return [];
     }
   }
@@ -119,6 +120,28 @@ class _tripPlanState extends State<tripPlan> {
       return null;
     }
   }
+
+Future<String> calculateTotalDistanceAndDuration(List<String> places) async {
+  Map<String, String> distanceMap = {}; // Store distances
+  Map<String, String> durationMap = {}; // Store durations
+  int totalDistance = 0;
+  int totalDuration = 0;
+
+  for (var i = 0; i < places.length - 1; i++) {
+    var directions =
+        await LocationService().getDirections(places[i], places[i + 1]);
+
+    distanceMap['${places[i]} to ${places[i + 1]}'] = directions['distance'];
+    durationMap['${places[i]} to ${places[i + 1]}'] = directions['duration'];
+
+    int distance = int.parse(directions['distance'].replaceAll(" km", ""));
+    int duration = int.parse(directions['duration']);
+    totalDistance += distance;
+    totalDuration += duration;
+  }
+
+  return 'Total Distance: $totalDistance km\nTotal Duration: $totalDuration minutes';
+}
 
   @override
   void initState() {
@@ -145,8 +168,7 @@ class _tripPlanState extends State<tripPlan> {
             child: Column(
               children: [
                 TextButton(
-                  onPressed: () =>
-                      _selectDate1(context), // Call the date picker function
+                  onPressed: () => _selectDate1(context),
                   child: Text('Select Date'),
                 ),
                 Text(
@@ -154,10 +176,8 @@ class _tripPlanState extends State<tripPlan> {
                       ? 'Selected Date: ${fromDate.toLocal()}'
                       : 'Select a Date',
                 ),
-
                 TextButton(
-                  onPressed: () =>
-                      _selectDate2(context), // Call the date picker function
+                  onPressed: () => _selectDate2(context),
                   child: Text('Select Date'),
                 ),
                 Text(
@@ -165,7 +185,6 @@ class _tripPlanState extends State<tripPlan> {
                       ? 'Selected Date: ${toDate.toLocal()}'
                       : 'Select a Date',
                 ),
-
                 SingleChildScrollView(
                   child: Container(
                     child: ListView.builder(
@@ -192,7 +211,6 @@ class _tripPlanState extends State<tripPlan> {
                     ),
                   ),
                 ),
-
                 ElevatedButton(
                   onPressed: () {
                     print(destination);
@@ -200,56 +218,16 @@ class _tripPlanState extends State<tripPlan> {
                   },
                   child: Text('Show possible paths'),
                 ),
-                // Display the result as a list (matrix)
-                // if (_result.isNotEmpty) // Check if the result is not empty
-                //   Column(
-                //     children: _result.map((row) {
-                //       return Row(
-                //         children: row.map((element) {
-                //           return Padding(
-                //             padding: const EdgeInsets.all(8.0),
-                //             child: Text(element),
-                //           );
-                //         }).toList(),
-                //       );
-                //     }).toList(),
-                //   ),
-
-                // SizedBox(
-                //   height: 400,
-                //   child: PageView(
-                //     scrollDirection: Axis.horizontal,
-                //     children: _result.map((subList) {
-                //       return Container(
-                //         decoration: BoxDecoration(
-                //           border: Border.all(color: Colors.black),
-                //         ),
-                //         padding: EdgeInsets.all(8.0),
-                //         margin: EdgeInsets.symmetric(horizontal: 8.0),
-                //         child: Column(
-                //           crossAxisAlignment: CrossAxisAlignment.start,
-                //           children: subList.map((element) {
-                //             return Padding(
-                //               padding: const EdgeInsets.all(25.0),
-                //               child: Align(
-                //                 alignment: Alignment.centerLeft,
-                //                 child: Text(element),
-                //               ),
-                //             );
-                //           }).toList(),
-                //         ),
-                //       );
-                //     }).toList(),
-                //   ),
-                // ),
                 SingleChildScrollView(
                   child: SizedBox(
                     height: 500,
                     child: PageView(
                       scrollDirection: Axis.horizontal,
                       children: _result.map((subList) {
+                        // Create a local list to store elements from subList
+                        List<String> localElements = [];
+
                         return Container(
-                          
                           decoration: BoxDecoration(
                             color: const Color.fromARGB(255, 189, 218, 190),
                             border: Border.all(color: Colors.black),
@@ -264,7 +242,6 @@ class _tripPlanState extends State<tripPlan> {
                                   final currentDate = DateTime.now();
                                   final nextDate =
                                       currentDate.add(Duration(days: index));
-
                                   final formattedDate =
                                       "${nextDate.day.toString().padLeft(2, '0')}/${nextDate.month.toString().padLeft(2, '0')}";
 
@@ -275,6 +252,9 @@ class _tripPlanState extends State<tripPlan> {
                                 }),
                               ),
                               ...subList.map((element) {
+                                // Add elements to the local list
+                                localElements.add(element);
+
                                 return FutureBuilder<List<String>>(
                                   future: WeatherUtil.getWeatherData(element),
                                   builder: (context, snapshot) {
@@ -287,26 +267,22 @@ class _tripPlanState extends State<tripPlan> {
                                           "Error fetching weather data for $element: ${snapshot.error}");
                                     } else if (snapshot.hasData) {
                                       final city = element;
-                                      final iconIds =
-                                          snapshot.data!; // List of icon IDs
+                                      final iconIds = snapshot.data!;
 
                                       return Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Text(city),
                                           SizedBox(height: 10),
                                           Row(
                                             children: iconIds.map((iconId) {
                                               return Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
+                                                padding: const EdgeInsets.all(9.5),
                                                 child: Image.network(
                                                   'https://openweathermap.org/img/wn/$iconId.png',
                                                   width: 40,
                                                   height: 40,
-                                                  errorBuilder: (context, error,
-                                                      stackTrace) {
+                                                  errorBuilder: (context, error, stackTrace) {
                                                     return Icon(Icons.error);
                                                   },
                                                 ),
@@ -316,19 +292,23 @@ class _tripPlanState extends State<tripPlan> {
                                         ],
                                       );
                                     } else {
-                                      return Text(
-                                          "No weather data available for $element");
+                                      return Text("No weather data available for $element");
                                     }
                                   },
                                 );
                               }),
+                              // Display the elements from the localElements list
+                              for (var element in localElements) Text(element),
+                              
+                              
+                              
                             ],
                           ),
                         );
                       }).toList(),
                     ),
                   ),
-                )
+                ),
               ],
             ),
           ),
