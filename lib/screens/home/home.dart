@@ -30,6 +30,8 @@ class _HomeScreen extends State<HomeScreen> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
             constraints: const BoxConstraints.expand(),
             decoration: const BoxDecoration(),
             child: CustomScrollView(
@@ -66,7 +68,7 @@ class _HomeScreen extends State<HomeScreen> {
                             ]),
                           ),
                           const SizedBox(
-                            width: 70,
+                            width: 65,
                           ),
                           SizedBox(
                               height: 40,
@@ -87,51 +89,49 @@ class _HomeScreen extends State<HomeScreen> {
                       const SizedBox(
                         height: 20,
                       ),
-                      Container(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Where do you wanna go?',
-                              style: GoogleFonts.signika(
-                                textStyle: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Where do you wanna go?',
+                            style: GoogleFonts.signika(
+                              textStyle: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          SizedBox(
+                            width: 320,
+                            height: 35,
+                            child: TextFormField(
+                              style: const TextStyle(color: Colors.white),
+                              cursorColor: Colors.white,
+                              decoration: InputDecoration(
+                                enabledBorder: const OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.white),
+                                ),
+                                suffixIcon: const Icon(
+                                  Icons.search_outlined,
+                                  color: Colors.white,
+                                ),
+                                labelText: 'Search',
+                                labelStyle:
+                                    const TextStyle(color: Colors.white),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
                                 ),
                               ),
                             ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            SizedBox(
-                              width: 320,
-                              height: 35,
-                              child: TextFormField(
-                                style: const TextStyle(color: Colors.white),
-                                cursorColor: Colors.white,
-                                decoration: InputDecoration(
-                                  enabledBorder: const OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.white),
-                                  ),
-                                  suffixIcon: const Icon(
-                                    Icons.search_outlined,
-                                    color: Colors.white,
-                                  ),
-                                  labelText: 'Search',
-                                  labelStyle:
-                                      const TextStyle(color: Colors.white),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                       const SizedBox(
-                        height: 60,
+                        height: 260,
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -185,100 +185,108 @@ class _HomeScreen extends State<HomeScreen> {
                       const SizedBox(
                         height: 10,
                       ),
-                      SizedBox(
-                        height: 300,
-                        child: FirestorePagination(
-                          limit: 2, // Defaults to 10.
-                          viewType: ViewType.wrap,
-                          scrollDirection:
-                              Axis.horizontal, // Defaults to Axis.vertical.
-                          query: FirebaseFirestore.instance
-                              .collection('cities')
-                              .orderBy('name', descending: true),
-                          itemBuilder: (context, documentSnapshot, index) {
-                            final data = documentSnapshot.data()
-                                as Map<String, dynamic>?;
-                            if (data == null) return Container();
+                      Row(
+                        children: [
+                          const SizedBox(
+                            width: 8,
+                          ),
+                          Expanded(
+                            child: SizedBox(
+                              height: 300,
+                              width: 380,
+                              child: FirestorePagination(
+                                limit: 1,
+                                viewType: ViewType.wrap,
+                                scrollDirection: Axis.horizontal,
+                                query: FirebaseFirestore.instance
+                                    .collection('cities')
+                                    .orderBy('name', descending: false),
+                                itemBuilder:
+                                    (context, documentSnapshot, index) {
+                                  final data = documentSnapshot.data()
+                                      as Map<String, dynamic>?;
+                                  if (data == null) return Container();
 
-                            return GestureDetector(
-                              onTap: () {
-                                // Define the data you want to pass to the next screen
-                                String cardTitle = data['name'];
+                                  String cityName = data['name'];
+                                  String imageUrl = data['featured_image'];
 
-                                // Navigate to the desired screen and pass the data as an argument
-                                Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) {
-                                    // Replace 'DestinationScreen' with the screen you want to navigate to
-                                    return DestinationPage(cardTitle);
-                                  },
-                                ));
-                              },
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(15.0),
-                                child: Stack(
-                                  alignment: Alignment.center,
-                                  children: [
-                                    // Display the image
-                                    const Image(
-                                      image: AssetImage('assets/google.png'),
-                                      fit: BoxFit.cover,
-                                      height: 275,
-                                      width: 200,
-                                    ),
-                                    // Overlay with a dark shade
-                                    Container(
-                                      height: 275,
-                                      width: 200,
-                                      decoration: BoxDecoration(
-                                        gradient: LinearGradient(
-                                          begin: Alignment.bottomCenter,
-                                          end: Alignment.center,
-                                          colors: [
-                                            Colors.black.withOpacity(1),
-                                            // Adjust the opacity as needed
-                                            Colors.black.withOpacity(0.05),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    Positioned(
-                                      bottom: 10,
-                                      // Adjust the position as needed
-                                      child: ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(10.0),
-                                        // Adjust the radius as needed
-                                        child: Container(
-                                          alignment: Alignment.center,
-                                          color: Colors.white,
-                                          width: 150,
-                                          // Adjust the width as needed
-                                          height: 40,
-                                          // Adjust the height as needed
-                                          child: Text(
-                                            data['name'],
-                                            style: GoogleFonts.signika(
-                                              textStyle: const TextStyle(
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.black,
+                                  return GestureDetector(
+                                    onTap: () {
+                                      String cardTitle = cityName;
+                                      Navigator.of(context)
+                                          .push(MaterialPageRoute(
+                                        builder: (context) {
+                                          return DestinationPage(cardTitle);
+                                        },
+                                      ));
+                                    },
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(15.0),
+                                      child: Stack(
+                                        alignment: Alignment.center,
+                                        children: [
+                                          Image(
+                                            image: NetworkImage(imageUrl),
+                                            fit: BoxFit.cover,
+                                            height: 275,
+                                            width: 186,
+                                          ),
+                                          Container(
+                                            height: 275,
+                                            width: 186,
+                                            decoration: BoxDecoration(
+                                              gradient: LinearGradient(
+                                                begin: Alignment.bottomCenter,
+                                                end: Alignment.center,
+                                                colors: [
+                                                  Colors.black.withOpacity(1),
+                                                  Colors.black
+                                                      .withOpacity(0.05),
+                                                ],
                                               ),
                                             ),
-                                          ), // Your content goes here
-                                        ),
+                                          ),
+                                          Positioned(
+                                            bottom: 10,
+                                            child: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(10.0),
+                                              child: Container(
+                                                alignment: Alignment.center,
+                                                color: Colors.white,
+                                                width: 130,
+                                                height: 40,
+                                                child: Text(
+                                                  cityName,
+                                                  style: GoogleFonts.signika(
+                                                    textStyle: const TextStyle(
+                                                      fontSize: 20,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: Colors.black,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  ],
+                                  );
+                                },
+                                wrapOptions: const WrapOptions(
+                                  alignment: WrapAlignment.start,
+                                  direction: Axis.vertical,
+                                  runSpacing: 5.0,
                                 ),
                               ),
-                            );
-                          },
-                          wrapOptions: const WrapOptions(
-                            alignment: WrapAlignment.start,
-                            direction: Axis.vertical,
-                            runSpacing: 10.0,
+                            ),
                           ),
-                        ),
+                          const SizedBox(
+                            width: 8,
+                          ),
+                        ],
                       ),
                       const SizedBox(
                         height: 10,
