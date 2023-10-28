@@ -1,328 +1,291 @@
-import 'package:flutter/material.dart';
-import 'package:tourease/screens/pages/add_city.dart';
-import 'package:tourease/screens/pages/destination.dart';
-import 'package:tourease/screens/pages/trip_plan.dart';
-import 'package:tourease/services/auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:ffi';
 
-class Home extends StatefulWidget {
-  const Home({Key? key}) : super(key: key);
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_pagination/firebase_pagination.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:tourease/constants/colors.dart';
+import 'package:tourease/constants/description.dart';
+import 'package:tourease/constants/styles.dart';
+import '../pages/destination.dart';
+
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
   @override
-  _HomeState createState() => _HomeState();
+  State<StatefulWidget> createState() => _HomeScreen();
 }
 
-class _HomeState extends State<Home> {
-  TextEditingController controller1 = TextEditingController();
-  // Create an object from AuthServices
-  final AuthServices _auth = AuthServices();
-
-  // Initialize selectedCities as an empty list
-  List<String> selectedCities = [];
-
-  // Fetch the user's selected cities from Firestore
-  void fetchSelectedCities() {
-    FirebaseAuth auth = FirebaseAuth.instance;
-    User? user = auth.currentUser;
-
-    if (user != null) {
-      String userUid = user.uid;
-      FirebaseFirestore firestore = FirebaseFirestore.instance;
-      DocumentReference userDocument =
-          firestore.collection('users').doc(userUid);
-
-      userDocument.get().then((docSnapshot) {
-        if (docSnapshot.exists) {
-          // Get the user's selected cities from Firestore
-          selectedCities = List<String>.from(
-              (docSnapshot.data() as Map<String, dynamic>)['selected_cities'] ??
-                  []);
-          setState(() {});
-        }
-      });
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    fetchSelectedCities();
-  }
-
+class _HomeScreen extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
-    String name = '';
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Home"),
-        actions: [
-          ElevatedButton(
-            onPressed: () async {
-              await _auth.signOut();
-            },
-            child: const Icon(Icons.logout),
-          )
-        ],
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: TextField(
-                autofocus: true, //maximum text length
-                keyboardType: TextInputType.name, //can only type numbers
-                style: TextStyle(fontSize: 20),
-                controller: controller1,
-                onSubmitted: (text) {
-                  name = controller1.text;
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) {
-                        return DestinationPage(name);
-                      },
-                    ),
-                  );
-                },
-                decoration: InputDecoration(
-                  filled: true,
-                  prefixIcon: Icon(Icons.search),
-                  suffixIcon: IconButton(
-                    icon: Icon(Icons.close),
-                    onPressed: () {
-                      controller1.text = '';
-                    },
+    Firebase.initializeApp();
+    return Container(
+      decoration: const BoxDecoration(
+          image: DecorationImage(
+              image: AssetImage('assets/homeBack.jpg'), fit: BoxFit.cover)),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Container(
+            constraints: const BoxConstraints.expand(),
+            decoration: const BoxDecoration(),
+            child: CustomScrollView(
+              slivers: [
+                SliverFillRemaining(
+                  hasScrollBody: false,
+                  //scrollDirection: Axis.vertical,
+                  //padding: const EdgeInsets.symmetric(vertical: 20),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      const SizedBox(
+                        height: 50,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          const SizedBox(
+                            width: 130,
+                          ),
+                          Container(
+                            alignment: Alignment.center,
+                            child: Row(children: [
+                              Text(
+                                'Tourease',
+                                style: GoogleFonts.signika(
+                                  textStyle: const TextStyle(
+                                    fontSize: 35,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                            ]),
+                          ),
+                          const SizedBox(
+                            width: 70,
+                          ),
+                          SizedBox(
+                              height: 40,
+                              width: 50,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(15.0),
+                                // Adjust the radius as needed
+                                child: IconButton(
+                                  icon: const Icon(Icons.person_3_outlined),
+                                  iconSize: 30,
+                                  onPressed: () {
+                                    // Handle button press
+                                  },
+                                ),
+                              )),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      Container(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Where do you wanna go?',
+                              style: GoogleFonts.signika(
+                                textStyle: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            SizedBox(
+                              width: 320,
+                              height: 35,
+                              child: TextFormField(
+                                style: const TextStyle(color: Colors.white),
+                                cursorColor: Colors.white,
+                                decoration: InputDecoration(
+                                  enabledBorder: const OutlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.white),
+                                  ),
+                                  suffixIcon: const Icon(
+                                    Icons.search_outlined,
+                                    color: Colors.white,
+                                  ),
+                                  labelText: 'Search',
+                                  labelStyle:
+                                      const TextStyle(color: Colors.white),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 60,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          SizedBox(
+                              height: 40,
+                              width: 150,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(15.0),
+                                // Adjust the radius as needed
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    // Handle button press
+                                  },
+                                  child: Text(
+                                    'Trip Plans',
+                                    style: GoogleFonts.signika(
+                                      textStyle: const TextStyle(
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              )),
+                          SizedBox(
+                              height: 40,
+                              width: 150,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(15.0),
+                                // Adjust the radius as needed
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    // Handle button press
+                                  },
+                                  child: Text(
+                                    'Hotels',
+                                    style: GoogleFonts.signika(
+                                      textStyle: const TextStyle(
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              )),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      SizedBox(
+                        height: 300,
+                        child: FirestorePagination(
+                          limit: 2, // Defaults to 10.
+                          viewType: ViewType.wrap,
+                          scrollDirection:
+                              Axis.horizontal, // Defaults to Axis.vertical.
+                          query: FirebaseFirestore.instance
+                              .collection('cities')
+                              .orderBy('name', descending: true),
+                          itemBuilder: (context, documentSnapshot, index) {
+                            final data = documentSnapshot.data()
+                                as Map<String, dynamic>?;
+                            if (data == null) return Container();
+
+                            return GestureDetector(
+                              onTap: () {
+                                // Define the data you want to pass to the next screen
+                                String cardTitle = data['name'];
+
+                                // Navigate to the desired screen and pass the data as an argument
+                                Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) {
+                                    // Replace 'DestinationScreen' with the screen you want to navigate to
+                                    return DestinationPage(cardTitle);
+                                  },
+                                ));
+                              },
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(15.0),
+                                child: Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    // Display the image
+                                    const Image(
+                                      image: AssetImage('assets/google.png'),
+                                      fit: BoxFit.cover,
+                                      height: 275,
+                                      width: 200,
+                                    ),
+                                    // Overlay with a dark shade
+                                    Container(
+                                      height: 275,
+                                      width: 200,
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          begin: Alignment.bottomCenter,
+                                          end: Alignment.center,
+                                          colors: [
+                                            Colors.black.withOpacity(1),
+                                            // Adjust the opacity as needed
+                                            Colors.black.withOpacity(0.05),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    Positioned(
+                                      bottom: 10,
+                                      // Adjust the position as needed
+                                      child: ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                        // Adjust the radius as needed
+                                        child: Container(
+                                          alignment: Alignment.center,
+                                          color: Colors.white,
+                                          width: 150,
+                                          // Adjust the width as needed
+                                          height: 40,
+                                          // Adjust the height as needed
+                                          child: Text(
+                                            data['name'],
+                                            style: GoogleFonts.signika(
+                                              textStyle: const TextStyle(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                          ), // Your content goes here
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                          wrapOptions: const WrapOptions(
+                            alignment: WrapAlignment.start,
+                            direction: Axis.vertical,
+                            runSpacing: 10.0,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      )
+                    ],
                   ),
                 ),
-              ),
-            ),
-            SizedBox(
-              height: 200,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                height: 195,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: [
-                    Row(
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            name = 'KANDY';
-                            Navigator.of(context)
-                                .push(MaterialPageRoute(builder: (_) {
-                              return DestinationPage(name);
-                            }));
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(2),
-                            child: Container(
-                              height: 200,
-                              width: 150,
-                              color: Color.fromARGB(255, 213, 198, 154),
-                              margin: EdgeInsets.only(right: 10),
-                              child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        color: Color.fromARGB(218, 146, 98, 10),
-                                      ),
-                                      padding: EdgeInsets.only(left: 1.8),
-                                      margin: EdgeInsets.only(top: 3),
-                                      child: Text(
-                                        'KANDY',
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          color: Colors.white70,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(5),
-                                      child: Container(
-                                          height: 155,
-                                          child: Image(
-                                              image: AssetImage(
-                                            'assests/kandy.png',
-                                          ))),
-                                    )
-                                  ]),
-                            ),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            name = 'GALLE';
-                            Navigator.of(context)
-                                .push(MaterialPageRoute(builder: (_) {
-                              return DestinationPage(name);
-                            }));
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(2),
-                            child: Container(
-                              height: 200,
-                              width: 150,
-                              color: Color.fromARGB(255, 213, 198, 154),
-                              margin: EdgeInsets.only(right: 10),
-                              child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        color: Color.fromARGB(218, 146, 98, 10),
-                                      ),
-                                      padding: EdgeInsets.only(left: 1.8),
-                                      margin: EdgeInsets.only(top: 3),
-                                      child: Text(
-                                        'GALLE',
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          color: Colors.white70,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(5),
-                                      child: Container(
-                                          height: 155,
-                                          child: Image(
-                                              image: AssetImage(
-                                            'assests/galle.png',
-                                          ))),
-                                    )
-                                  ]),
-                            ),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            name = 'ANURADHAPURA';
-                            Navigator.of(context)
-                                .push(MaterialPageRoute(builder: (_) {
-                              return DestinationPage(name);
-                            }));
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(2),
-                            child: Container(
-                              height: 200,
-                              width: 150,
-                              color: Color.fromARGB(255, 213, 198, 154),
-                              margin: EdgeInsets.only(right: 10),
-                              child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        color: Color.fromARGB(218, 146, 98, 10),
-                                      ),
-                                      padding: EdgeInsets.only(left: 1.8),
-                                      margin: EdgeInsets.only(top: 3),
-                                      child: Text(
-                                        'ANURADAPURA',
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          color: Colors.white70,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(5),
-                                      child: Container(
-                                          height: 155,
-                                          child: Image(
-                                              image: AssetImage(
-                                            'assests/anuradapura.png',
-                                          ))),
-                                    )
-                                  ]),
-                            ),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            name = 'COLOMBO';
-                            Navigator.of(context)
-                                .push(MaterialPageRoute(builder: (_) {
-                              return DestinationPage(name);
-                            }));
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(2),
-                            child: Container(
-                              height: 200,
-                              width: 150,
-                              color: Color.fromARGB(255, 213, 198, 154),
-                              margin: EdgeInsets.only(right: 10),
-                              child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        color: Color.fromARGB(218, 146, 98, 10),
-                                      ),
-                                      padding: EdgeInsets.only(left: 1.8),
-                                      margin: EdgeInsets.only(top: 3),
-                                      child: Text(
-                                        'COLOMBO',
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          color: Colors.white70,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(5),
-                                      child: Container(
-                                          height: 155,
-                                          child: Image(
-                                              image: AssetImage(
-                                            'assests/colombo.png',
-                                          ))),
-                                    )
-                                  ]),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        ChooseCity(selectedCities: selectedCities),
-                  ),
-                );
-              },
-              child: const Text("Add City"),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => tripPlan(),
-                  ),
-                );
-              },
-              child: const Text("Trip plan"),
-            ),
-          ],
-        ),
+              ],
+            )),
       ),
     );
   }

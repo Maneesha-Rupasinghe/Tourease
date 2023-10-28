@@ -16,6 +16,8 @@ class DistanceAndDuration {
   List<Future<void>> loadPlaceFutures = [];
 
   Future<void> calculateTotalDistanceAndDuration(List<String> places) async {
+    totalDistance = 0;
+    totalDuration = 0;
     // Create a list of Futures for all the _loadPlace calls
     for (var i = 0; i < places.length - 1; i++) {
       loadPlaceFutures.add(_loadPlace(places[i], places[i + 1]));

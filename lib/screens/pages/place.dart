@@ -33,15 +33,6 @@ class _HomepageState extends State<placepage> {
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(2),
-                child: Container(
-                    height: 150,
-                    child: Image(
-                        image: AssetImage(
-                      'assests/colombo.png',
-                    ))),
-              ),
             ],
           ),
         ),

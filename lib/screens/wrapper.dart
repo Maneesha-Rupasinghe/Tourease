@@ -4,11 +4,8 @@ import 'package:tourease/models/UserModel.dart';
 import 'package:tourease/screens/authentication/authenticate.dart';
 import 'package:tourease/screens/home/home.dart';
 
-
 class Wrapper extends StatelessWidget {
   const Wrapper({super.key});
-  
-
 
   @override
   Widget build(BuildContext context) {
@@ -16,8 +13,7 @@ class Wrapper extends StatelessWidget {
     if (user == null) {
       return const Authenticate();
     } else {
-      return   const Home();
-  
+      return const HomeScreen();
     }
   }
 }
