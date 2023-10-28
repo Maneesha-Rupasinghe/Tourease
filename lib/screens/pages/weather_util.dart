@@ -3,7 +3,7 @@ import 'dart:convert';
 
 class WeatherUtil {
   static Future<List<String>> getWeatherData(String city) async {
-    final apiKey = 'c0ccd7e4d8a0a210c77267062e33c2bc';
+    const apiKey = 'c0ccd7e4d8a0a210c77267062e33c2bc';
     final apiEndpoint = 'https://api.openweathermap.org/data/2.5/forecast?q=$city&appid=$apiKey';
     final weatherData = <String>[];
 

@@ -9,7 +9,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:tourease/constants/colors.dart';
 import 'package:tourease/constants/description.dart';
 import 'package:tourease/constants/styles.dart';
+import 'package:tourease/screens/pages/userProfile.dart';
 import '../pages/destination.dart';
+import 'package:tourease/screens/pages/trip_plan.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -21,7 +23,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreen extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
-
     Firebase.initializeApp();
     return Container(
       decoration: const BoxDecoration(
@@ -78,7 +79,14 @@ class _HomeScreen extends State<HomeScreen> {
                                   icon: const Icon(Icons.person_3_outlined),
                                   iconSize: 30,
                                   onPressed: () {
-                                    // Handle button press
+                                    // Navigate to the tripPlan screen
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return EditProfilePage();
+                                        },
+                                      ),
+                                    );
                                   },
                                 ),
                               )),
@@ -144,7 +152,14 @@ class _HomeScreen extends State<HomeScreen> {
                                 // Adjust the radius as needed
                                 child: ElevatedButton(
                                   onPressed: () {
-                                    // Handle button press
+                                    // Navigate to the tripPlan screen
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return tripPlan();
+                                        },
+                                      ),
+                                    );
                                   },
                                   child: Text(
                                     'Trip Plans',
@@ -288,8 +303,6 @@ class _HomeScreen extends State<HomeScreen> {
                 ),
               ],
             )),
-
-
       ),
     );
   }

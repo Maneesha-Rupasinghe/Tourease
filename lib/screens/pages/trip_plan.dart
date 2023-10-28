@@ -348,7 +348,7 @@ Future<String> calculateTotalDistanceAndDuration(List<String> places) async {
                                 );
                               }),
                               // Display the elements from the localElements list
-                              for (var element in localElements) Text(element),
+                              // for (var element in localElements) Text(element),
                               
                               
                               
