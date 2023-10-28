@@ -2,6 +2,7 @@ import 'dart:ffi';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_pagination/firebase_pagination.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -20,6 +21,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreen extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
+
     Firebase.initializeApp();
     return Container(
       decoration: const BoxDecoration(
@@ -294,6 +296,8 @@ class _HomeScreen extends State<HomeScreen> {
                 ),
               ],
             )),
+
+
       ),
     );
   }
