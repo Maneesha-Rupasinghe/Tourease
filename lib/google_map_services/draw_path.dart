@@ -27,14 +27,6 @@ class DrawPathState extends State<DrawPath> {
     zoom: 7.9,
   );
 
-  // List<String> places = [
-  //   "Colombo",
-  //   "Kurunegala",
-  //   "Anuradhapura",
-  //   "Trincomalee",
-  //   "jaffna"
-  // ];
-
   @override
   void initState() {
     super.initState();
@@ -93,7 +85,8 @@ class DrawPathState extends State<DrawPath> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Optimum Route'),
+        title: const Text('Selected Route'),
+        backgroundColor: Colors.blueGrey.shade700,
       ),
       body: Stack(
         children: [

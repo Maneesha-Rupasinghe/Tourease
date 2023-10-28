@@ -3,9 +3,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:tourease/google_map_services/location_service/location_service.dart';
 import 'package:tourease/screens/pages/weather_util.dart';
 import 'package:tourease/google_map_services/get_distance_duration.dart';
+import 'package:tourease/google_map_services/draw_path.dart';
 
 class tripPlan extends StatefulWidget {
   const tripPlan({Key? key}) : super(key: key);
@@ -24,9 +24,7 @@ class _tripPlanState extends State<tripPlan> {
   late DateTime fromDate = DateTime.now();
   late DateTime toDate = DateTime.now();
 
-  String? totalDistanceAndDuration;
-
-  final DistanceAndDuration distanceDuration = DistanceAndDuration();
+  final distanceDuration = DistanceAndDuration();
 
   Future<void> _selectDate1(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -121,28 +119,6 @@ class _tripPlanState extends State<tripPlan> {
     }
   }
 
-  Future<String> calculateTotalDistanceAndDuration(List<String> places) async {
-    Map<String, String> distanceMap = {}; // Store distances
-    Map<String, String> durationMap = {}; // Store durations
-    int totalDistance = 0;
-    int totalDuration = 0;
-
-    for (var i = 0; i < places.length - 1; i++) {
-      var directions =
-          await LocationService().getDirections(places[i], places[i + 1]);
-
-      distanceMap['${places[i]} to ${places[i + 1]}'] = directions['distance'];
-      durationMap['${places[i]} to ${places[i + 1]}'] = directions['duration'];
-
-      int distance = int.parse(directions['distance'].replaceAll(" km", ""));
-      int duration = int.parse(directions['duration']);
-      totalDistance += distance;
-      totalDuration += duration;
-    }
-
-    return 'Total Distance: $totalDistance km\nTotal Duration: $totalDuration minutes';
-  }
-
   @override
   void initState() {
     super.initState();
@@ -218,50 +194,6 @@ class _tripPlanState extends State<tripPlan> {
                   },
                   child: Text('Show possible paths'),
                 ),
-
-                // Display the result as a list (matrix)
-                // if (_result.isNotEmpty) // Check if the result is not empty
-                //   Column(
-                //     children: _result.map((row) {
-                //       return Row(
-                //         children: row.map((element) {
-                //           return Padding(
-                //             padding: const EdgeInsets.all(8.0),
-                //             child: Text(element),
-                //           );
-                //         }).toList(),
-                //       );
-                //     }).toList(),
-                //   ),
-
-                // SizedBox(
-                //   height: 400,
-                //   child: PageView(
-                //     scrollDirection: Axis.horizontal,
-                //     children: _result.map((subList) {
-                //       return Container(
-                //         decoration: BoxDecoration(
-                //           border: Border.all(color: Colors.black),
-                //         ),
-                //         padding: EdgeInsets.all(8.0),
-                //         margin: EdgeInsets.symmetric(horizontal: 8.0),
-                //         child: Column(
-                //           crossAxisAlignment: CrossAxisAlignment.start,
-                //           children: subList.map((element) {
-                //             return Padding(
-                //               padding: const EdgeInsets.all(25.0),
-                //               child: Align(
-                //                 alignment: Alignment.centerLeft,
-                //                 child: Text(element),
-                //               ),
-                //             );
-                //           }).toList(),
-                //         ),
-                //       );
-                //     }).toList(),
-                //   ),
-                // ),
-
                 SingleChildScrollView(
                   child: SizedBox(
                     height: 500,
@@ -272,6 +204,8 @@ class _tripPlanState extends State<tripPlan> {
                         List<String> localElements = [];
 
                         return Container(
+                          width: MediaQuery.of(context).size.width,
+                          height: MediaQuery.of(context).size.height,
                           decoration: BoxDecoration(
                             color: const Color.fromARGB(255, 189, 218, 190),
                             border: Border.all(color: Colors.black),
@@ -290,7 +224,7 @@ class _tripPlanState extends State<tripPlan> {
                                       "${nextDate.day.toString().padLeft(2, '0')}/${nextDate.month.toString().padLeft(2, '0')}";
 
                                   return Container(
-                                    padding: EdgeInsets.all(10.0),
+                                    padding: EdgeInsets.all(9.0),
                                     child: Text(formattedDate),
                                   );
                                 }),
@@ -323,7 +257,7 @@ class _tripPlanState extends State<tripPlan> {
                                             children: iconIds.map((iconId) {
                                               return Padding(
                                                 padding:
-                                                    const EdgeInsets.all(9.5),
+                                                    const EdgeInsets.all(8.5),
                                                 child: Image.network(
                                                   'https://openweathermap.org/img/wn/$iconId.png',
                                                   width: 40,
@@ -346,28 +280,35 @@ class _tripPlanState extends State<tripPlan> {
                                 );
                               }),
                               // Display the elements from the localElements list
-                              ListView.builder(
-                                itemCount: localElements.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  final element = localElements[index];
-                                  return FutureBuilder<String>(
-                                    future: calculateTotalDistanceAndDuration(
-                                        [element]),
-                                    builder: (context, snapshot) {
-                                      if (snapshot.connectionState ==
-                                          ConnectionState.waiting) {
-                                        return Text(
-                                            "Calculating distance and duration...");
-                                      } else if (snapshot.hasError) {
-                                        return Text("Error: ${snapshot.error}");
-                                      } else if (snapshot.hasData) {
-                                        return Text(snapshot.data!);
-                                      } else {
-                                        return Text("No data available");
-                                      }
-                                    },
+                              //for (var element in localElements) Text(element),
+                              // FutureBuilder<String>(
+                              //   future: distanceDuration
+                              //       .calculateTotalDistanceAndDuration(
+                              //           localElements),
+                              //   builder: (context, snapshot) {
+                              //     if (snapshot.connectionState ==
+                              //         ConnectionState.waiting) {
+                              //       return CircularProgressIndicator(); // or any other loading indicator
+                              //     } else if (snapshot.hasError) {
+                              //       return Text("Error: ${snapshot.error}");
+                              //     } else if (snapshot.hasData) {
+                              //       // Data has been received, so display it
+                              //       return Text(snapshot.data!);
+                              //     } else {
+                              //       return Text("No data available");
+                              //     }
+                              //   },
+                              // )
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) {
+                                      return DrawPath(places: localElements);
+                                    }),
                                   );
                                 },
+                                child: Text('Draw Path'),
                               ),
                             ],
                           ),
