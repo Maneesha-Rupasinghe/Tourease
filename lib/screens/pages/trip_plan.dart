@@ -218,6 +218,56 @@ Future<String> calculateTotalDistanceAndDuration(List<String> places) async {
                   },
                   child: Text('Show possible paths'),
                 ),
+
+
+
+                // Display the result as a list (matrix)
+                // if (_result.isNotEmpty) // Check if the result is not empty
+                //   Column(
+                //     children: _result.map((row) {
+                //       return Row(
+                //         children: row.map((element) {
+                //           return Padding(
+                //             padding: const EdgeInsets.all(8.0),
+                //             child: Text(element),
+                //           );
+                //         }).toList(),
+                //       );
+                //     }).toList(),
+                //   ),
+
+                // SizedBox(
+                //   height: 400,
+                //   child: PageView(
+                //     scrollDirection: Axis.horizontal,
+                //     children: _result.map((subList) {
+                //       return Container(
+                //         decoration: BoxDecoration(
+                //           border: Border.all(color: Colors.black),
+                //         ),
+                //         padding: EdgeInsets.all(8.0),
+                //         margin: EdgeInsets.symmetric(horizontal: 8.0),
+                //         child: Column(
+                //           crossAxisAlignment: CrossAxisAlignment.start,
+                //           children: subList.map((element) {
+                //             return Padding(
+                //               padding: const EdgeInsets.all(25.0),
+                //               child: Align(
+                //                 alignment: Alignment.centerLeft,
+                //                 child: Text(element),
+                //               ),
+                //             );
+                //           }).toList(),
+                //         ),
+                //       );
+                //     }).toList(),
+                //   ),
+                // ),
+
+
+
+
+
                 SingleChildScrollView(
                   child: SizedBox(
                     height: 500,
