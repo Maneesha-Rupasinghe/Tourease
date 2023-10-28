@@ -92,7 +92,7 @@ class _HomeScreen extends State<HomeScreen> {
                             textStyle: const TextStyle(
                               fontSize: 35,
                               fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                              color: Colors.black,
                             ),
                           ),
                         ),
@@ -179,265 +179,84 @@ class _HomeScreen extends State<HomeScreen> {
                       ),
                       SizedBox(
                         height: 300,
-                        child: ListView(
-                            scrollDirection: Axis.horizontal,
-                            children: [
-                              Container(
-                                height: 300,
-                                color: Colors.white.withOpacity(0.1),
-                                child: FirestorePagination(
-                                  limit: 2, // Defaults to 10.
-                                  viewType: ViewType.wrap,
-                                  scrollDirection: Axis.horizontal, // Defaults to Axis.vertical.
-                                  query: FirebaseFirestore.instance
-                                      .collection('cities')
-                                      .orderBy('name', descending: true),
-                                  itemBuilder: (context, documentSnapshot, index) {
-                                    final data = documentSnapshot.data() as Map<String, dynamic>?;
-                                    if (data == null) return Container();
+                        child: FirestorePagination(
+                          limit: 2, // Defaults to 10.
+                          viewType: ViewType.wrap,
+                          scrollDirection: Axis.horizontal, // Defaults to Axis.vertical.
+                          query: FirebaseFirestore.instance
+                              .collection('cities')
+                              .orderBy('name', descending: true),
+                          itemBuilder: (context, documentSnapshot, index) {
+                            final data = documentSnapshot.data() as Map<String, dynamic>?;
+                            if (data == null) return Container();
 
-                                    return ClipRRect(
-                                      borderRadius: BorderRadius.circular(15.0),
-                                      child: Stack(
-                                        alignment: Alignment.center,
-                                        children: [
-                                          // Display the image
-                                          const Image(
-                                            image: AssetImage(sigiriya),
-                                            fit: BoxFit.cover,
-                                            height: 275,
-                                            width: 200,
-                                          ),
-                                          // Overlay with a dark shade
-                                          Container(
-                                            height: 275,
-                                            width: 200,
-                                            decoration: BoxDecoration(
-                                              gradient: LinearGradient(
-                                                begin: Alignment.bottomCenter,
-                                                end: Alignment.center,
-                                                colors: [
-                                                  Colors.black.withOpacity(1),
-                                                  // Adjust the opacity as needed
-                                                  Colors.black
-                                                      .withOpacity(0.05),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                          Positioned(
-                                            bottom: 10,
-                                            // Adjust the position as needed
-                                            child: ClipRRect(
-                                              borderRadius:
-                                              BorderRadius.circular(10.0),
-                                              // Adjust the radius as needed
-                                              child: Container(
-                                                alignment: Alignment.center,
-                                                color: Colors.white,
-                                                width: 150,
-                                                // Adjust the width as needed
-                                                height: 40,
-                                                // Adjust the height as needed
-                                                child: Text(
-                                                  data['name'],
-                                                  style: GoogleFonts.signika(
-                                                    textStyle: const TextStyle(
-                                                      fontSize: 20,
-                                                      fontWeight:
-                                                      FontWeight.bold,
-                                                      color: Colors.black,
-                                                    ),
-                                                  ),
-                                                ), // Your content goes here
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  },
-                                  wrapOptions: const WrapOptions(
-                                    alignment: WrapAlignment.start,
-                                    direction: Axis.vertical,
-                                    runSpacing: 10.0,
+                            return ClipRRect(
+                              borderRadius: BorderRadius.circular(15.0),
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  // Display the image
+                                  const Image(
+                                    image: AssetImage(sigiriya),
+                                    fit: BoxFit.cover,
+                                    height: 275,
+                                    width: 200,
                                   ),
-                                ),
-                                /*Row(
-                                  children: <Widget>[
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(15.0),
-                                      child: Stack(
-                                        alignment: Alignment.center,
-                                        children: [
-                                          // Display the image
-                                          const Image(
-                                            image: AssetImage(sigiriya),
-                                            fit: BoxFit.cover,
-                                            height: 275,
-                                            width: 200,
-                                          ),
-                                          // Overlay with a dark shade
-                                          Container(
-                                            height: 275,
-                                            width: 200,
-                                            decoration: BoxDecoration(
-                                              gradient: LinearGradient(
-                                                begin: Alignment.bottomCenter,
-                                                end: Alignment.center,
-                                                colors: [
-                                                  Colors.black.withOpacity(1),
-                                                  // Adjust the opacity as needed
-                                                  Colors.black
-                                                      .withOpacity(0.05),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                          Positioned(
-                                            bottom: 10,
-                                            // Adjust the position as needed
-                                            child: ClipRRect(
-                                              borderRadius:
-                                              BorderRadius.circular(10.0),
-                                              // Adjust the radius as needed
-                                              child: Container(
-                                                alignment: Alignment.center,
-                                                color: Colors.white,
-                                                width: 150,
-                                                // Adjust the width as needed
-                                                height: 40,
-                                                // Adjust the height as needed
-                                                child: Text(
-                                                  'Sigiriya',
-                                                  style: GoogleFonts.signika(
-                                                    textStyle: const TextStyle(
-                                                      fontSize: 20,
-                                                      fontWeight:
-                                                      FontWeight.bold,
-                                                      color: Colors.black,
-                                                    ),
-                                                  ),
-                                                ), // Your content goes here
-                                              ),
-                                            ),
-                                          ),
+                                  // Overlay with a dark shade
+                                  Container(
+                                    height: 275,
+                                    width: 200,
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        begin: Alignment.bottomCenter,
+                                        end: Alignment.center,
+                                        colors: [
+                                          Colors.black.withOpacity(1),
+                                          // Adjust the opacity as needed
+                                          Colors.black
+                                              .withOpacity(0.05),
                                         ],
                                       ),
                                     ),
-                                    const SizedBox(
-                                      width: 10,
-                                    ),
-                                    ClipRRect(
-                                      borderRadius: const BorderRadius.only(
-                                          topRight: Radius.circular(10),
-                                          topLeft: Radius.circular(10),
-                                          bottomLeft: Radius.circular(10),
-                                          bottomRight: Radius.circular(10)),
-                                      child: Stack(
+                                  ),
+                                  Positioned(
+                                    bottom: 10,
+                                    // Adjust the position as needed
+                                    child: ClipRRect(
+                                      borderRadius:
+                                      BorderRadius.circular(10.0),
+                                      // Adjust the radius as needed
+                                      child: Container(
                                         alignment: Alignment.center,
-                                        children: [
-                                          // Display the image
-                                          const Image(
-                                            image: AssetImage(sigiriya),
-                                            fit: BoxFit.cover,
-                                            height: 275,
-                                            width: 200,
-                                          ),
-                                          // Overlay with a dark shade
-                                          Container(
-                                            height: 275,
-                                            width: 200,
-                                            decoration: BoxDecoration(
-                                              gradient: LinearGradient(
-                                                begin: Alignment.bottomCenter,
-                                                end: Alignment.center,
-                                                colors: [
-                                                  Colors.black.withOpacity(1),
-                                                  // Adjust the opacity as needed
-                                                  Colors.transparent,
-                                                ],
-                                              ),
+                                        color: Colors.white,
+                                        width: 150,
+                                        // Adjust the width as needed
+                                        height: 40,
+                                        // Adjust the height as needed
+                                        child: Text(
+                                          data['name'],
+                                          style: GoogleFonts.signika(
+                                            textStyle: const TextStyle(
+                                              fontSize: 20,
+                                              fontWeight:
+                                              FontWeight.bold,
+                                              color: Colors.black,
                                             ),
                                           ),
-                                          Positioned(
-                                            bottom: 10,
-                                            // Adjust the position as needed
-                                            child: Container(
-                                              // Background color for text
-                                              child: const Text(
-                                                "Sigiriya",
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  // Text color
-                                                  fontSize: 20, // Text size
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
+                                        ), // Your content goes here
                                       ),
                                     ),
-                                    const SizedBox(
-                                      width: 10,
-                                    ),
-                                    ClipRRect(
-                                      borderRadius: const BorderRadius.only(
-                                          topRight: Radius.circular(10),
-                                          topLeft: Radius.circular(10),
-                                          bottomLeft: Radius.circular(10),
-                                          bottomRight: Radius.circular(10)),
-                                      child: Stack(
-                                        alignment: Alignment.center,
-                                        children: [
-                                          // Display the image
-                                          const Image(
-                                            image: AssetImage(sigiriya),
-                                            fit: BoxFit.cover,
-                                            height: 275,
-                                            width: 200,
-                                          ),
-                                          // Overlay with a dark shade
-                                          Container(
-                                            height: 275,
-                                            width: 200,
-                                            decoration: BoxDecoration(
-                                              gradient: LinearGradient(
-                                                begin: Alignment.bottomCenter,
-                                                end: Alignment.center,
-                                                colors: [
-                                                  Colors.black.withOpacity(1),
-                                                  // Adjust the opacity as needed
-                                                  Colors.transparent,
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                          Positioned(
-                                            bottom: 10,
-                                            // Adjust the position as needed
-                                            child: Container(
-                                              // Background color for text
-                                              child: const Text(
-                                                "Sigiriya",
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  // Text color
-                                                  fontSize: 20, // Text size
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      width: 10,
-                                    ),
-                                  ],
-                                ),*/
-                              )
-                            ]),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                          wrapOptions: const WrapOptions(
+                            alignment: WrapAlignment.start,
+                            direction: Axis.vertical,
+                            runSpacing: 10.0,
+                          ),
+                        ),
                       ),
                       const SizedBox(
                         height: 10,

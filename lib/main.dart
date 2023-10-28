@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tourease/models/UserModel.dart';
+import 'package:tourease/screens/home/homePage.dart';
 import 'package:tourease/screens/test/myListView.dart';
 import 'package:tourease/screens/wrapper.dart';
 import 'package:tourease/services/auth.dart';
@@ -24,7 +25,7 @@ class MyApp extends StatelessWidget {
       initialData: UserModel(uid: ""),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: MyListView(),
+        home: HomeScreen(),
       ),
     );
   }
