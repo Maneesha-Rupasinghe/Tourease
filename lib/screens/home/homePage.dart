@@ -5,6 +5,7 @@ import 'package:firebase_pagination/firebase_pagination.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../constants/images.dart';
 import '../constants/images.dart';
+import '../pages/destination.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -190,64 +191,78 @@ class _HomeScreen extends State<HomeScreen> {
                             final data = documentSnapshot.data() as Map<String, dynamic>?;
                             if (data == null) return Container();
 
-                            return ClipRRect(
-                              borderRadius: BorderRadius.circular(15.0),
-                              child: Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  // Display the image
-                                  const Image(
-                                    image: AssetImage(sigiriya),
-                                    fit: BoxFit.cover,
-                                    height: 275,
-                                    width: 200,
-                                  ),
-                                  // Overlay with a dark shade
-                                  Container(
-                                    height: 275,
-                                    width: 200,
-                                    decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                        begin: Alignment.bottomCenter,
-                                        end: Alignment.center,
-                                        colors: [
-                                          Colors.black.withOpacity(1),
-                                          // Adjust the opacity as needed
-                                          Colors.black
-                                              .withOpacity(0.05),
-                                        ],
+                            return GestureDetector(
+                              onTap: () {
+                                // Define the data you want to pass to the next screen
+                                String cardTitle = data['name'];
+
+                                // Navigate to the desired screen and pass the data as an argument
+                                Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) {
+                                    // Replace 'DestinationScreen' with the screen you want to navigate to
+                                    return DestinationPage(cardTitle);
+                                  },
+                                ));
+                              },
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(15.0),
+                                child: Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    // Display the image
+                                    const Image(
+                                      image: AssetImage(sigiriya),
+                                      fit: BoxFit.cover,
+                                      height: 275,
+                                      width: 200,
+                                    ),
+                                    // Overlay with a dark shade
+                                    Container(
+                                      height: 275,
+                                      width: 200,
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          begin: Alignment.bottomCenter,
+                                          end: Alignment.center,
+                                          colors: [
+                                            Colors.black.withOpacity(1),
+                                            // Adjust the opacity as needed
+                                            Colors.black
+                                                .withOpacity(0.05),
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  Positioned(
-                                    bottom: 10,
-                                    // Adjust the position as needed
-                                    child: ClipRRect(
-                                      borderRadius:
-                                      BorderRadius.circular(10.0),
-                                      // Adjust the radius as needed
-                                      child: Container(
-                                        alignment: Alignment.center,
-                                        color: Colors.white,
-                                        width: 150,
-                                        // Adjust the width as needed
-                                        height: 40,
-                                        // Adjust the height as needed
-                                        child: Text(
-                                          data['name'],
-                                          style: GoogleFonts.signika(
-                                            textStyle: const TextStyle(
-                                              fontSize: 20,
-                                              fontWeight:
-                                              FontWeight.bold,
-                                              color: Colors.black,
+                                    Positioned(
+                                      bottom: 10,
+                                      // Adjust the position as needed
+                                      child: ClipRRect(
+                                        borderRadius:
+                                        BorderRadius.circular(10.0),
+                                        // Adjust the radius as needed
+                                        child: Container(
+                                          alignment: Alignment.center,
+                                          color: Colors.white,
+                                          width: 150,
+                                          // Adjust the width as needed
+                                          height: 40,
+                                          // Adjust the height as needed
+                                          child: Text(
+                                            data['name'],
+                                            style: GoogleFonts.signika(
+                                              textStyle: const TextStyle(
+                                                fontSize: 20,
+                                                fontWeight:
+                                                FontWeight.bold,
+                                                color: Colors.black,
+                                              ),
                                             ),
-                                          ),
-                                        ), // Your content goes here
+                                          ), // Your content goes here
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             );
                           },
