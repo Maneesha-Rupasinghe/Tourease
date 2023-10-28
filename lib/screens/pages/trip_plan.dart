@@ -3,7 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter/material.dart';
+import 'package:tourease/screens/pages/weather_util.dart';
+import 'package:tourease/google_map_services/get_distance_duration.dart';
 
 class tripPlan extends StatefulWidget {
   const tripPlan({Key? key}) : super(key: key);
@@ -21,20 +22,22 @@ class _tripPlanState extends State<tripPlan> {
   List<List<String>> _result = [];
   late DateTime fromDate = DateTime.now();
   late DateTime toDate = DateTime.now();
+  final distanceDuration = DistanceAndDuration();
 
   // Create a list to store the first and last elements
   List<String> firstAndLastElements = [];
+
   Future<void> _selectDate1(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(), // Initial date to show in the picker
-      firstDate: DateTime(2023), // The earliest selectable date
-      lastDate: DateTime(2025), // The latest selectable date
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2023),
+      lastDate: DateTime(2025),
     );
 
     if (picked != null && picked != fromDate) {
       setState(() {
-        fromDate = picked; // Update the selected date in your state
+        fromDate = picked;
       });
     }
   }
@@ -42,14 +45,14 @@ class _tripPlanState extends State<tripPlan> {
   Future<void> _selectDate2(BuildContext context) async {
     final DateTime? picked2 = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(), // Initial date to show in the picker
-      firstDate: DateTime(2023), // The earliest selectable date
-      lastDate: DateTime(2025), // The latest selectable date
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2023),
+      lastDate: DateTime(2025),
     );
 
     if (picked2 != null && picked2 != toDate) {
       setState(() {
-        toDate = picked2; // Update the selected date in your state
+        toDate = picked2;
       });
     }
   }
@@ -74,7 +77,7 @@ class _tripPlanState extends State<tripPlan> {
         _result = (responseData['possible_paths'] as List)
             .map((path) => (path as List).cast<String>())
             .toList();
-        print("Send successfull");
+        print("Send successful");
       });
     } else {
       print("Error in send destinations");
@@ -96,16 +99,14 @@ class _tripPlanState extends State<tripPlan> {
           if (selectedCitiesData is List) {
             List<String> cities =
                 selectedCitiesData.map((city) => city.toString()).toList();
-            destination.addAll(cities); // Add the retrieved cities
+            destination.addAll(cities);
             return cities;
           }
         }
       }
 
-      // Handle the case where the user's document doesn't exist or the data is not in the expected format.
       return [];
     } catch (e) {
-      // Handle any errors that occur during the retrieval.
       return [];
     }
   }
@@ -117,6 +118,11 @@ class _tripPlanState extends State<tripPlan> {
     } else {
       return null;
     }
+  }
+
+  Future<void> calculateDistanceAndDuration(List<String> localElements) async {
+    String distance = await distanceDuration.calculateTotalDistanceAndDuration(localElements);
+    print("Distance: $distance");
   }
 
   @override
@@ -144,8 +150,7 @@ class _tripPlanState extends State<tripPlan> {
             child: Column(
               children: [
                 TextButton(
-                  onPressed: () =>
-                      _selectDate1(context), // Call the date picker function
+                  onPressed: () => _selectDate1(context),
                   child: Text('Select Date'),
                 ),
                 Text(
@@ -153,10 +158,8 @@ class _tripPlanState extends State<tripPlan> {
                       ? 'Selected Date: ${fromDate.toLocal()}'
                       : 'Select a Date',
                 ),
-
                 TextButton(
-                  onPressed: () =>
-                      _selectDate2(context), // Call the date picker function
+                  onPressed: () => _selectDate2(context),
                   child: Text('Select Date'),
                 ),
                 Text(
@@ -164,36 +167,37 @@ class _tripPlanState extends State<tripPlan> {
                       ? 'Selected Date: ${toDate.toLocal()}'
                       : 'Select a Date',
                 ),
-
-                Container(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: (destination.length / 3).ceil(),
-                    itemBuilder: (BuildContext context, int index) {
-                      final startIndex = index * 3;
-                      final endIndex = (startIndex + 3 < destination.length)
-                          ? startIndex + 3
-                          : destination.length;
-                      final rowCities =
-                          destination.sublist(startIndex, endIndex);
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: rowCities.map((city) {
-                          return Expanded(
-                            child: ListTile(
-                              title: Text(city),
-                            ),
-                          );
-                        }).toList(),
-                      );
-                    },
+                SingleChildScrollView(
+                  child: Container(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: (destination.length / 3).ceil(),
+                      itemBuilder: (BuildContext context, int index) {
+                        final startIndex = index * 3;
+                        final endIndex = (startIndex + 3 < destination.length)
+                            ? startIndex + 3
+                            : destination.length;
+                        final rowCities =
+                            destination.sublist(startIndex, endIndex);
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: rowCities.map((city) {
+                            return Expanded(
+                              child: ListTile(
+                                title: Text(city),
+                              ),
+                            );
+                          }).toList(),
+                        );
+                      },
+                    ),
                   ),
                 ),
-
                 ElevatedButton(
                   onPressed: () {
                     print(destination);
                     sendMatricesToCloudFunction(distance, destination);
+                    calculateDistanceAndDuration(destination);
                   },
                   child: Text('Show possible paths'),
                 ),
@@ -211,34 +215,138 @@ class _tripPlanState extends State<tripPlan> {
                 //       );
                 //     }).toList(),
                 //   ),
+                // SizedBox(
+                //   height: 400,
+                //   child: PageView(
+                //     scrollDirection: Axis.horizontal,
+                //     children: _result.map((subList) {
+                //       return Container(
+                //         decoration: BoxDecoration(
+                //           border: Border.all(color: Colors.black),
+                //         ),
+                //         padding: EdgeInsets.all(8.0),
+                //         margin: EdgeInsets.symmetric(horizontal: 8.0),
+                //         child: Column(
+                //           crossAxisAlignment: CrossAxisAlignment.start,
+                //           children: subList.map((element) {
+                //             return Padding(
+                //               padding: const EdgeInsets.all(25.0),
+                //               child: Align(
+                //                 alignment: Alignment.centerLeft,
+                //                 child: Text(element),
+                //               ),
+                //             );
+                //           }).toList(),
+                //         ),
+                //       );
+                //     }).toList(),
+                //   ),
+                // ),
+                SingleChildScrollView(
+                  child: SizedBox(
+                    height: 500,
+                    child: PageView(
+                      scrollDirection: Axis.horizontal,
+                      children: _result.map((subList) {
+                        // Create a local list to store elements from subList
+                        List<String> localElements = [];
 
-                SizedBox(
-                  height: 400,
-                  child: PageView(
-                    scrollDirection: Axis.horizontal,
-                    children: _result.map((subList) {
-                      return Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black),
-                        ),
-                        padding: EdgeInsets.all(8.0),
-                        margin: EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: subList.map((element) {
-                            return Padding(
-                              padding: const EdgeInsets.all(25.0),
-                              child: Align(
-                                alignment: Alignment.centerLeft,
-                                child: Text(element),
+                        return Container(
+                          decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 189, 218, 190),
+                            border: Border.all(color: Colors.black),
+                          ),
+                          padding: EdgeInsets.all(8.0),
+                          margin: EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: List.generate(6, (index) {
+                                  final currentDate = DateTime.now();
+                                  final nextDate =
+                                      currentDate.add(Duration(days: index));
+
+                                  final formattedDate =
+                                      "${nextDate.day.toString().padLeft(2, '0')}/${nextDate.month.toString().padLeft(2, '0')}";
+
+                                  return Container(
+                                    padding: EdgeInsets.all(10.0),
+                                    child: Text(formattedDate),
+                                  );
+                                }),
                               ),
-                            );
-                          }).toList(),
-                        ),
-                      );
-                    }).toList(),
+                              ...subList.map((element) {
+                                // Add elements to the local list
+                                localElements.add(element);
+
+                                return FutureBuilder<List<String>>(
+                                  future: WeatherUtil.getWeatherData(element),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.waiting) {
+                                      return Text(
+                                          "Fetching weather data for $element...");
+                                    } else if (snapshot.hasError) {
+                                      return Text(
+                                          "Error fetching weather data for $element: ${snapshot.error}");
+                                    } else if (snapshot.hasData) {
+                                      final city = element;
+                                      final iconIds = snapshot.data!;
+
+                                      return Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(city),
+                                          SizedBox(height: 10),
+                                          Row(
+                                            children: iconIds.map((iconId) {
+                                              return Padding(
+                                                padding: const EdgeInsets.all(9.5),
+                                                child: Image.network(
+                                                  'https://openweathermap.org/img/wn/$iconId.png',
+                                                  width: 40,
+                                                  height: 40,
+                                                  errorBuilder: (context, error, stackTrace) {
+                                                    return Icon(Icons.error);
+                                                  },
+                                                ),
+                                              );
+                                            }).toList(),
+                                          ),
+                                        ],
+                                      );
+                                    } else {
+                                      return Text("No weather data available for $element");
+                                    }
+                                  },
+                                );
+                              }),
+                              // Display the elements from the localElements list
+                              for (var element in localElements) Text(element),
+                              // Calculate and display the distance and duration
+                              // FutureBuilder<String>(
+                              //   future: calculateDistanceAndDuration(localElements),
+                              //   builder: (context, snapshot) {
+                              //     if (snapshot.connectionState == ConnectionState.waiting) {
+                              //       return Text("Calculating distance and duration...");
+                              //     } else if (snapshot.hasError) {
+                              //       return Text("Error calculating distance and duration: ${snapshot.error}");
+                              //     } else if (snapshot.hasData) {
+                              //       final distanceDurationText = snapshot.data!;
+                              //       return Text("Distance and Duration: $distanceDurationText");
+                              //     } else {
+                              //       return Text("Distance and Duration information not available");
+                              //     }
+                              //   },
+                              // ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                    ),
                   ),
-                )
+                ),
               ],
             ),
           ),
