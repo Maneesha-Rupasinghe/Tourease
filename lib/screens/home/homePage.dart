@@ -181,12 +181,12 @@ class _HomeScreen extends State<HomeScreen> {
                       SizedBox(
                         height: 300,
                         child: FirestorePagination(
-                          limit: 2, // Defaults to 10.
+                          limit: 2, // Defaults to 2.
                           viewType: ViewType.wrap,
                           scrollDirection: Axis.horizontal, // Defaults to Axis.vertical.
                           query: FirebaseFirestore.instance
                               .collection('cities')
-                              .orderBy('name', descending: true),
+                              .orderBy('name', descending: false),
                           itemBuilder: (context, documentSnapshot, index) {
                             final data = documentSnapshot.data() as Map<String, dynamic>?;
                             if (data == null) return Container();
@@ -270,6 +270,7 @@ class _HomeScreen extends State<HomeScreen> {
                             alignment: WrapAlignment.start,
                             direction: Axis.vertical,
                             runSpacing: 10.0,
+                            //clipBehavior: Clip.none,
                           ),
                         ),
                       ),
