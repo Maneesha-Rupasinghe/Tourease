@@ -29,8 +29,6 @@ class DistanceAndDuration {
     await Future.wait(loadPlaceFutures);
 
     // All calls have completed, now you can access the totalDistance and totalDuration
-    print(totalDistance);
-    print(totalDuration);
     return totalDistance.toString();
   }
 
