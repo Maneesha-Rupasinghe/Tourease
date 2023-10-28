@@ -44,6 +44,9 @@ dependencies:
   dart_date: ^1.2.2
   firebase_pagination: ^3.0.0
 
+  google_fonts: ^6.1.0
+
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -70,6 +73,7 @@ flutter:
     - assets/facebook.jpg
     - assets/google.png
     - assets/register.png
+    - assets/homeBack.jpg
     - assets/register.webp
 
   # An image asset can refer to one or more resolution-specific "variants", see

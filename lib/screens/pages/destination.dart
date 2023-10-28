@@ -97,7 +97,7 @@ class DestinationPage extends StatelessWidget {
                                           height: 150,
                                           child: Image(
                                               image: AssetImage(
-                                            'assests/colombo.png',
+                                            'assets/homeBack.png',
                                           ))),
                                     ),
                                   ),
@@ -138,7 +138,7 @@ class DestinationPage extends StatelessWidget {
                                           height: 150,
                                           child: Image(
                                               image: AssetImage(
-                                            'assests/colombo.png',
+                                            'assets/homeBack.png',
                                           ))),
                                     ),
                                   ),
@@ -179,7 +179,7 @@ class DestinationPage extends StatelessWidget {
                                           height: 150,
                                           child: Image(
                                               image: AssetImage(
-                                            'assests/colombo.png',
+                                            'assets/homeBack.png',
                                           ))),
                                     ),
                                   ),
@@ -220,7 +220,7 @@ class DestinationPage extends StatelessWidget {
                                           height: 150,
                                           child: Image(
                                               image: AssetImage(
-                                            'assests/colombo.png',
+                                            'assets/homeBack.png',
                                           ))),
                                     ),
                                   ),
