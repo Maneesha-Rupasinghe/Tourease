@@ -1,0 +1,1 @@
+const String sigiriya = "assets/Sigiriya.jpg";

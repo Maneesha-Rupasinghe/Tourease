@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tourease/models/UserModel.dart';
+import 'package:tourease/screens/test/myListView.dart';
 import 'package:tourease/screens/wrapper.dart';
 import 'package:tourease/services/auth.dart';
 
@@ -21,9 +22,9 @@ class MyApp extends StatelessWidget {
     return StreamProvider<UserModel?>.value(
       value: AuthServices().user,
       initialData: UserModel(uid: ""),
-      child: const MaterialApp(
+      child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: Wrapper(),
+        home: MyListView(),
       ),
     );
   }
