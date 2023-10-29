@@ -5,7 +5,7 @@ import 'package:firebase_pagination/firebase_pagination.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../constants/images.dart';
 import '../constants/images.dart';
-import '../pages/destination.dart';
+import '../pages/destinationScreen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tourease/models/UserModel.dart';
 import 'package:tourease/screens/home/homePage.dart';
+import 'package:tourease/screens/pages/destinationScreen.dart';
+import 'package:tourease/screens/pages/placesScreen.dart';
 import 'package:tourease/screens/test/myListView.dart';
 import 'package:tourease/screens/wrapper.dart';
 import 'package:tourease/services/auth.dart';
@@ -25,7 +27,7 @@ class MyApp extends StatelessWidget {
       initialData: UserModel(uid: ""),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: HomeScreen(),
+        home: placesScreen('','Colombo'),
       ),
     );
   }
