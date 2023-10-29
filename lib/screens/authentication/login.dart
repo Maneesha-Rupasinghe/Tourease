@@ -4,7 +4,7 @@ import 'package:tourease/constants/styles.dart';
 import 'package:tourease/services/auth.dart';
 
 class SingIn extends StatefulWidget {
-  //function
+  // Function
   final Function toggle;
 
   const SingIn({Key? key, required this.toggle}) : super(key: key);
@@ -14,11 +14,13 @@ class SingIn extends StatefulWidget {
 }
 
 class _SingInState extends State<SingIn> {
-//refference for the Authservice class
+  // Reference for the AuthService class
   final AuthServices _auth = AuthServices();
-//form key
+
+  // Form key
   final _formKey = GlobalKey<FormState>();
-//email password states
+
+  // Email and password states
   String email = "";
   String password = "";
   String error = "";
@@ -26,44 +28,48 @@ class _SingInState extends State<SingIn> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: startBackgroundBlack,
-        appBar: AppBar(
-            title: const Text(
-              "Sign In Here",
-              style: TextStyle(color: signInRegisterbackgroundWhite),
+      backgroundColor: Colors.transparent,
+      resizeToAvoidBottomInset: true,
+      body: SingleChildScrollView(
+        child: Container(
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage(
+                  'assets/sigiriya.jpg'), // Replace with your image path
+              fit: BoxFit.cover, // Set to BoxFit.cover
             ),
-            backgroundColor: startBackgroundBlack),
-        body: SingleChildScrollView(
+          ),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Padding(
-              padding: const EdgeInsets.only(top: 40),
+              padding:
+                  EdgeInsets.only(top: 140, bottom: 160), // Corrected this line
               child: Container(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(40),
-                  color: signInRegisterbackgroundWhite,
+                  borderRadius: BorderRadius.circular(6),
+                  color: signInRegisterbackgroundWhite.withOpacity(0.7),
                 ),
                 child: Column(
                   children: [
                     const Padding(
-                      padding: EdgeInsets.only(top: 8),
+                      padding: EdgeInsets.only(top: 30),
                       child: Text(
-                        "Sign In",
+                        "LOGIN",
                         style: signInRegisterText3,
                       ),
                     ),
-                    //description
-                    const Text(
-                      "Sign In",
-                      style: signInRegisterText,
-                    ),
+                    // Description
+                    // const Text(
+                    //   "Sign In",
+                    //   style: signInRegisterText,
+                    // ),
                     Padding(
                       padding: const EdgeInsets.all(12.0),
                       child: Form(
                         key: _formKey,
                         child: Column(
                           children: [
-                            //email
+                            // Email
                             TextFormField(
                               style: const TextStyle(color: Colors.black),
                               decoration: textInputdecorataion,
@@ -76,26 +82,25 @@ class _SingInState extends State<SingIn> {
                                 });
                               },
                             ),
-                            //password
                             const SizedBox(
                               height: 14,
                             ),
+                            // Password
                             TextFormField(
                               style: const TextStyle(color: Colors.black),
                               decoration: textInputdecorataion.copyWith(
-                                  hintText: "password"),
+                                hintText: "Password",
+                              ),
                               validator: (val) => val!.length < 6
                                   ? "Enter a valid password"
                                   : null,
                               onChanged: (val) {
-                                setState(
-                                  () {
-                                    password = val;
-                                  },
-                                );
+                                setState(() {
+                                  password = val;
+                                });
                               },
                             ),
-                            //google
+                            // Google
                             const SizedBox(
                               height: 20,
                             ),
@@ -103,8 +108,62 @@ class _SingInState extends State<SingIn> {
                               error,
                               style: const TextStyle(color: Colors.red),
                             ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            ElevatedButton(
+                              onPressed: () async {
+                                dynamic result =
+                                    await _auth.signInUsingEmailAndPassword(
+                                        email, password);
+                                if (result == null) {
+                                  setState(() {
+                                    error =
+                                        "Username or password is not matching";
+                                  });
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                primary: Colors.blue, // Background color
+                                onPrimary: Colors.white, // Text color
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(
+                                      10), // Adjust the border radius
+                                ),
+                              ),
+                              child: Container(
+                                width: 150,
+                                height: 40,
+                                child: const Center(
+                                  child: Text(
+                                    "LOGIN",
+                                    style: startButtonText,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            GestureDetector(
+                              // Method for log in as guest
+                              onTap: () async {
+                                await _auth.signInAnonoymously();
+                              },
+                              child: const Text(
+                                "LOGIN AS GUEST",
+                                style: TextStyle(
+                                  color: Colors.blue,
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 18,
+                                  decoration: TextDecoration
+                                      .underline, // Apply underline
+                                ),
+                              ),
+                            ),
+
                             const Text(
-                              "Login with socila accounts",
+                              "Login with social accounts",
                               style: signInRegisterText,
                             ),
                             const Divider(
@@ -118,13 +177,13 @@ class _SingInState extends State<SingIn> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 GestureDetector(
-                                  //sign in with google
+                                  // Sign in with Facebook
                                   onTap: () {},
                                   child: Center(
                                     child: Image.asset(
-                                      'assets/facebook.jpg',
-                                      height: 50,
-                                      width: 50,
+                                      'assets/facebook.png',
+                                      height: 40,
+                                      width: 40,
                                     ),
                                   ),
                                 ),
@@ -132,20 +191,18 @@ class _SingInState extends State<SingIn> {
                                   width: 15,
                                 ),
                                 GestureDetector(
-                                  //sign in with google
+                                  // Sign in with Google
                                   onTap: () {},
                                   child: Center(
                                     child: Image.asset(
                                       'assets/google.png',
-                                      height: 50,
-                                      width: 50,
+                                      height: 62,
+                                      width: 62,
                                     ),
                                   ),
                                 ),
                               ],
                             ),
-
-                            //register page
                             const SizedBox(
                               height: 15,
                             ),
@@ -153,122 +210,44 @@ class _SingInState extends State<SingIn> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 const Text(
-                                  "Do not have an account",
+                                  "Do not have an account?",
                                   style: signInRegisterText2,
                                 ),
-                                const SizedBox(
+                                SizedBox(
                                   width: 10,
                                 ),
                                 GestureDetector(
-                                  //go to the register page
+                                  // Go to the register page
                                   onTap: () {
                                     widget.toggle();
                                   },
                                   child: const Text(
                                     "REGISTER",
                                     style: TextStyle(
-                                        color: Colors.blue,
-                                        fontWeight: FontWeight.w400),
+                                      color: Colors.blue,
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 18,
+                                      decoration: TextDecoration
+                                          .underline, // Apply underline
+                                    ),
                                   ),
                                 ),
                               ],
                             ),
-                            //button
                             const SizedBox(
                               height: 20,
                             ),
-                            GestureDetector(
-                              //method for log in
-                              onTap: () async {
-                                dynamic result =
-                                    await _auth.signInUsingEmailAndPassword(
-                                        email, password);
-                                if (result == null) {
-                                  setState(
-                                    () {
-                                      error =
-                                          "User name or password is not matching ";
-                                    },
-                                  );
-                                }
-                              },
-                              child: Container(
-                                height: 40,
-                                width: 200,
-                                decoration: BoxDecoration(
-                                    color: startButtonGreen,
-                                    borderRadius: BorderRadius.circular(100),
-                                    border: Border.all(
-                                        width: 3, color: startButtonGreen)),
-                                child: const Center(
-                                  child:
-                                      Text("LOG IN", style: (startButtonText)),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            GestureDetector(
-                              //method for log in
-                              onTap: () async {
-                                dynamic result =
-                                    await _auth.signInUsingEmailAndPassword(
-                                        email, password);
-                                if (result == null) {
-                                  setState(
-                                    () {
-                                      error =
-                                          "User name or password is not matching ";
-                                    },
-                                  );
-                                }
-                              },
-                              child: GestureDetector(
-                                //method for loggin as guest
-                                onTap: () async {
-                                  await _auth.signInAnonoymously();
-                                },
-                                child: Container(
-                                  height: 40,
-                                  width: 200,
-                                  decoration: BoxDecoration(
-                                      color: startButtonGreen,
-                                      borderRadius: BorderRadius.circular(100),
-                                      border: Border.all(
-                                          width: 3, color: startButtonGreen)),
-                                  child: const Center(
-                                      child: Text(
-                                    "LOG IN AS GUEST",
-                                    style: (startButtonText),
-                                  )),
-                                ),
-                              ),
-                            ),
-                            //anonymous
                           ],
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
             ),
           ),
-        ));
+        ),
+      ),
+    );
   }
 }
-
-
-      // ElevatedButton(
-      //   child: const Text("Sign In Anonyously"),
-      //   onPressed: () async {
-      //     dynamic result = await _auth.signInAnonoymously();
-      //     if (result == Null) {
-      //       print("Error In Signing");
-      //     } else {
-      //       print("Sign in anonymous");
-      //       print(result.uid);
-      //     }
-      //   },
-      // ),

@@ -12,6 +12,7 @@ import 'package:tourease/constants/styles.dart';
 import 'package:tourease/screens/pages/userProfile.dart';
 import '../pages/destination.dart';
 import 'package:tourease/screens/pages/trip_plan.dart';
+import 'package:tourease/screens/pages/my_plans.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
