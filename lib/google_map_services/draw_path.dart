@@ -18,6 +18,7 @@ class DrawPathState extends State<DrawPath> {
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
   final Set<Polyline> _polylines = Set<Polyline>();
+  final Set<Marker> _markers = Set<Marker>(); // New marker set
   int _polylineIdCounter = 1;
   final List<String> places;
   DrawPathState({required this.places});
@@ -40,6 +41,17 @@ class DrawPathState extends State<DrawPath> {
     var directions = await LocationService().getDirections(input1, input2);
 
     _setPolyline(directions['polyline_decoded']);
+
+    if (input2 == places.last) {
+      _addMarker(
+          directions['end_location']['lat'], directions['end_location']['lng']);
+      _addMarker(directions['start_location']['lat'],
+          directions['start_location']['lng']);
+    } else {
+      _addMarker(directions['start_location']['lat'],
+          directions['start_location']['lng']);
+    }
+
     setState(() {}); // Force a rebuild
   }
 
@@ -54,6 +66,20 @@ class DrawPathState extends State<DrawPath> {
     );
 
     setState(() {}); // Force a rebuild
+  }
+
+  void _addMarker(double lat, double lng) {
+    final MarkerId markerId = MarkerId("Marker $_polylineIdCounter");
+    _polylineIdCounter++;
+
+    _markers.add(
+      Marker(
+        markerId: markerId,
+        position: LatLng(lat, lng),
+        infoWindow: InfoWindow(title: "Place"),
+        icon: BitmapDescriptor.defaultMarker,
+      ),
+    );
   }
 
   // static const Marker _kGooglePlexMarker = Marker(
@@ -94,6 +120,7 @@ class DrawPathState extends State<DrawPath> {
             mapType: MapType.normal,
             zoomGesturesEnabled: true,
             polylines: _polylines,
+            markers: _markers, // Add the markers to the GoogleMap
             initialCameraPosition: _kGooglePlex,
             onMapCreated: (GoogleMapController controller) {
               _controller.complete(controller);
