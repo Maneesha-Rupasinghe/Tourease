@@ -500,8 +500,7 @@ class _tripPlanState extends State<tripPlan> {
                     print(destination);
                     sendMatricesToCloudFunction(distance, destination);
                   },
-               
-style: ElevatedButton.styleFrom(
+                  style: ElevatedButton.styleFrom(
                     primary: Colors.blue, // Background color of the button
                     onPrimary: Colors.white, // Text color
                     padding: const EdgeInsets.all(
@@ -610,19 +609,20 @@ style: ElevatedButton.styleFrom(
                                   ...subList.map((element) {
                                     localElements.add(element);
 
-                                return FutureBuilder<List<String>>(
-                                  future: WeatherUtil.getWeatherData(element),
-                                  builder: (context, snapshot) {
-                                    if (snapshot.connectionState ==
-                                        ConnectionState.waiting) {
-                                      return Text(
-                                          "Fetching weather data for $element...");
-                                    } else if (snapshot.hasError) {
-                                      return Text(
-                                          "Error fetching weather data for $element: ${snapshot.error}");
-                                    } else if (snapshot.hasData) {
-                                      final city = element;
-                                      final iconIds = snapshot.data!;
+                                    return FutureBuilder<List<String>>(
+                                      future:
+                                          WeatherUtil.getWeatherData(element),
+                                      builder: (context, snapshot) {
+                                        if (snapshot.connectionState ==
+                                            ConnectionState.waiting) {
+                                          return Text(
+                                              "Fetching weather data for $element...");
+                                        } else if (snapshot.hasError) {
+                                          return Text(
+                                              "Error fetching weather data for $element: ${snapshot.error}");
+                                        } else if (snapshot.hasData) {
+                                          final city = element;
+                                          final iconIds = snapshot.data!;
 
                                           return Column(
                                             crossAxisAlignment:
@@ -684,6 +684,33 @@ style: ElevatedButton.styleFrom(
                                     );
                                   }),
                                 ],
+                              ),
+                              FutureBuilder<String>(
+                                future: calculateTotalDistanceAndDuration(
+                                    localElements),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.done) {
+                                    if (snapshot.hasData) {
+                                      //print(localElements);
+                                      return Text(snapshot.data!);
+                                    } else if (snapshot.hasError) {
+                                      return Text('Error: ${snapshot.error}');
+                                    }
+                                  }
+                                  return const CircularProgressIndicator(); // Or some other loading indicator
+                                },
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) {
+                                      return DrawPath(places: localElements);
+                                    }),
+                                  );
+                                },
+                                child: const Text('Draw Path'),
                               ),
                               ElevatedButton(
                                 onPressed: () async {
