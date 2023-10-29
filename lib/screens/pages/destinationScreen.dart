@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tourease/screens/pages/place.dart';
 import 'package:tourease/screens/pages/placesScreen.dart';
-
 import '../../constants/images.dart';
 
 class DestinationPage extends StatelessWidget {
@@ -25,12 +24,25 @@ class DestinationPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    return SafeArea(
-      child: Scaffold(
-        body: Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          child: Column(
+    CollectionReference docu = FirebaseFirestore.instance.collection('cities');
+
+    return FutureBuilder<DocumentSnapshot>(
+      future: docu.doc(place.toLowerCase()).get(),
+      builder:
+      (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+
+    if (snapshot.hasError) {
+    return Text("Something went wrong");
+    }
+
+    if (snapshot.hasData && !snapshot.data!.exists) {
+    return Text("Document does not exist");
+    }
+
+    if (snapshot.connectionState == ConnectionState.done) {
+    Map<String, dynamic> data = snapshot.data!.data() as Map<String, dynamic>;
+    return Scaffold(
+        body: Column(
             children: [
               Container(
                 //height: 300,
@@ -49,8 +61,8 @@ class DestinationPage extends StatelessWidget {
                             color: Color.fromARGB(255, 252, 234, 160),
                           ),
                           child: Text(
-                            '$place',
-                            style: TextStyle(
+                            data["name"],
+                            style: const TextStyle(
                               fontSize: 35,
                               fontWeight: FontWeight.w400,
                             ),
@@ -64,8 +76,8 @@ class DestinationPage extends StatelessWidget {
                         height: MediaQuery.of(context).size.height * 0.2,
                         child: SingleChildScrollView(
                           child: Text(
-                          'abcdhgbhbv nbfyebhe  uibui4 ev3riw rb7rv3 h 3vuih qi h3h rgwgeyf we yw',
-                            style: TextStyle(
+                            data["description"],
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w400,
                             ),
@@ -101,7 +113,7 @@ class DestinationPage extends StatelessWidget {
                             Navigator.of(context).push(MaterialPageRoute(
                               builder: (context) {
                                 // Replace 'DestinationScreen' with the screen you want to navigate to
-                                return placesScreen(cardTitle,place.toLowerCase());
+                                return placesScreen(collectionName: cardTitle, documentName: place.toLowerCase());
                               },
                             ));
                           },
@@ -179,10 +191,12 @@ class DestinationPage extends StatelessWidget {
                 ),
             ],
           ),
-        ),
-      ),
-    );
-  }
 
+      );
+  }
+    return Text("loading");
+    },
+    );
+}
 
 }

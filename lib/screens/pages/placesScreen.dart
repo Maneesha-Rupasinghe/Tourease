@@ -1,63 +1,81 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+
 String place = 'lotus tower';
 String city = 'colombo';
 
 class placesScreen extends StatelessWidget {
 
+  final String collectionName;
+  final String documentName;
 
-  placesScreen(String name1, String name2, {super.key}) {
-    place = name1;
-    city = name2;
-    //description = getDesription(place);
-
-  }
-
-  TextEditingController controller1 = TextEditingController();
-
-  var imageURL = 'https://previews.123rf.com/images/gumbao/gumbao1509/gumbao150900016/44987080-kiefer-firest-auf-la-marina-an-der-k%C3%BCste-des-mittelmeers-costa-blanca-spanien.jpg';
-  final Stream<QuerySnapshot> _data = FirebaseFirestore.instance.collection('cities').doc(city).collection(place).snapshots();
-
-  //TextEditingController controller2 = TextEditingController();
+  placesScreen({
+    required this.collectionName,
+    required this.documentName,
+  });
 
 
   @override
   Widget build(BuildContext context) {
+    CollectionReference docu = FirebaseFirestore.instance.collection('cities').doc(documentName).collection('places');
 
-    return Scaffold(
-      body:
-      StreamBuilder<QuerySnapshot>(
-        stream: _data,
-        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (snapshot.hasError) {
-            return Text('Something went wrong');
-          }
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Text("Loading");
-          }
-          return ListView(
-            children: snapshot.data!.docs.map((DocumentSnapshot document) {
-              Map<String, dynamic> data = document.data()! as Map<String,
-                  dynamic>;
-              return ListTile(
-                title: Text(data['name'],style: Theme.of(context).textTheme.headline1,
-                ),
-                subtitle: Image(
-                  image: NetworkImage(data['featured_image']), // ----------- the line that should change
-                  width: 300,
-                  height: 300,
+    return FutureBuilder<DocumentSnapshot>(
+      future: docu.doc(collectionName).get(),
+      builder:
+          (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
 
+        if (snapshot.hasError) {
+          return Text("Something went wrong");
+        }
+
+        if (snapshot.hasData && !snapshot.data!.exists) {
+          return Text("Document does not exist");
+        }
+
+        if (snapshot.connectionState == ConnectionState.done) {
+          Map<String, dynamic> data = snapshot.data!.data() as Map<String, dynamic>;
+          return Scaffold(
+            body: SafeArea(
+              child: Center(
+                child: Column(
+                  children: [
+                    Container(
+                      decoration: const BoxDecoration(
+                        color: Color.fromARGB(218, 146, 98, 10),
+                      ),
+                      padding: EdgeInsets.only(left: 1.8),
+                      margin: EdgeInsets.only(top: 3),
+                      child: Text(
+                        data['name'],
+                        style: const TextStyle(
+                          fontSize: 20,
+                          color: Colors.white70,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(2),
+                      child: Container(
+                          height: 150,
+                          child: Image.network(data['featured_image'])),
+                    ),
+                  ],
                 ),
-              );
-            }).toList(),
+              ),
+            ),
           );
+        }
 
-        },
-      ),
+        return Text("loading");
+      },
     );
   }
-
-
 }
+
 
 
