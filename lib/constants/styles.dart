@@ -20,7 +20,7 @@ const TextStyle startText = TextStyle(
     fontFamily: 'Oswald');
 const TextStyle signInRegisterText = TextStyle(
   fontSize: 18,
-  color: Colors.white,
+  color: Colors.black,
   fontWeight: FontWeight.w300,
 );
 const TextStyle signInRegisterText2 = TextStyle(

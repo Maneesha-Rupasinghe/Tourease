@@ -78,6 +78,8 @@ flutter:
     - assets/homeBack.jpg
     - assets/register.webp
     - assets/placeholder.webp
+    - assets/sigiriya.png
+    - assets/sigiriya2.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

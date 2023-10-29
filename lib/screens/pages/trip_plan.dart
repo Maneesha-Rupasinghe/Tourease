@@ -685,22 +685,22 @@ class _tripPlanState extends State<tripPlan> {
                                   }),
                                 ],
                               ),
-                              FutureBuilder<String>(
-                                future: calculateTotalDistanceAndDuration(
-                                    localElements),
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.done) {
-                                    if (snapshot.hasData) {
-                                      //print(localElements);
-                                      return Text(snapshot.data!);
-                                    } else if (snapshot.hasError) {
-                                      return Text('Error: ${snapshot.error}');
-                                    }
-                                  }
-                                  return const CircularProgressIndicator(); // Or some other loading indicator
-                                },
-                              ),
+                              // FutureBuilder<String>(
+                              //   future: calculateTotalDistanceAndDuration(
+                              //       localElements),
+                              //   builder: (context, snapshot) {
+                              //     if (snapshot.connectionState ==
+                              //         ConnectionState.done) {
+                              //       if (snapshot.hasData) {
+                              //         //print(localElements);
+                              //         return Text(snapshot.data!);
+                              //       } else if (snapshot.hasError) {
+                              //         return Text('Error: ${snapshot.error}');
+                              //       }
+                              //     }
+                              //     return const CircularProgressIndicator(); // Or some other loading indicator
+                              //   },
+                              // ),
                               ElevatedButton(
                                 onPressed: () {
                                   Navigator.push(
