@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:tourease/screens/pages/my_plans.dart';
 
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({Key? key}) : super(key: key);
@@ -155,6 +156,37 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     ),
                   ),
                 ),
+                
+
+
+
+                GestureDetector(
+      onTap: () {
+        // Navigate to another page when the container is tapped
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => MyPlans()),
+        );
+      },
+      child: Container(
+        width: 200,
+        height: 100,
+        decoration: BoxDecoration(
+          color: Colors.blue,
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        child: Center(
+          child: Text(
+            'Tap to Navigate',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+            ),
+          ),
+        ),
+      ),
+    ),
+  
                 const SizedBox(height: 16.0),
                 TextFormField(
                   controller: _fnameController,

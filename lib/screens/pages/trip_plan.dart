@@ -163,6 +163,88 @@ class _tripPlanState extends State<tripPlan> {
     );
   }
 
+  Future<void> saveListToFirestore(String planName, List<String> myList) async {
+    try {
+      // Get the current user
+      final User? user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        // User is not signed in
+        return;
+      }
+
+      // Reference to the Firestore instance
+      final firestore = FirebaseFirestore.instance;
+
+      // Reference to the user's document
+      final userDocument = firestore.collection('users').doc(user.uid);
+
+      // Reference to the user_plans subcollection
+      final userPlansCollection = userDocument.collection('user_plans');
+
+      // Set the list with a custom document ID (planName)
+      await userPlansCollection.doc(planName).set({
+        'your_list_field_name': myList,
+      });
+
+      // You can handle success or display a message here
+    } catch (e) {
+      // Handle errors
+      print('Error saving list to Firestore: $e');
+    }
+  }
+
+  Future<void> clearSelectedCities() async {
+    try {
+      // Get the current user
+      final User? user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        // User is not signed in
+        return;
+      }
+
+      // Reference to the Firestore instance
+      final firestore = FirebaseFirestore.instance;
+
+      // Reference to the user's document
+      final userDocument = firestore.collection('users').doc(user.uid);
+
+      // Update the selected_cities field with an empty list
+      await userDocument.update({
+        'selected_cities': FieldValue.arrayRemove([]),
+      });
+
+      // You can handle success or display a message here
+      print("clera");
+    } catch (e) {
+      // Handle errors
+      print('Error clearing selected_cities in Firestore: $e');
+    }
+  }
+
+  Future<String?> _getNameFromUser(BuildContext context) async {
+    return await showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+        final TextEditingController nameController = TextEditingController();
+        return AlertDialog(
+          title: Text('Enter a name for your plan'),
+          content: TextField(
+            controller: nameController,
+            decoration: InputDecoration(hintText: 'Plan Name'),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Save'),
+              onPressed: () {
+                Navigator.of(context).pop(nameController.text);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -401,9 +483,7 @@ class _tripPlanState extends State<tripPlan> {
                     String startCity = startCityController.text;
                     String endCity = endCityController.text;
 
-                    // Ensure the user has entered both start and end cities.
                     if (startCity.isEmpty || endCity.isEmpty) {
-                      // You can display an error message or alert the user.
                       return;
                     }
 
@@ -491,108 +571,150 @@ class _tripPlanState extends State<tripPlan> {
                         // Create a local list to store elements from subList
                         List<String> localElements = [];
 
-                        return IntrinsicHeight(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Color.fromARGB(255, 189, 218, 190),
-                              border: Border.all(color: Colors.black),
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            padding: const EdgeInsets.all(8.0),
-                            margin: const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: List.generate(6, (index) {
-                                    final currentDate = DateTime.now();
-                                    final nextDate =
-                                        currentDate.add(Duration(days: index));
-                                    final formattedDate =
-                                        "${nextDate.day.toString().padLeft(2, '0')}/${nextDate.month.toString().padLeft(2, '0')}";
-                                    return Container(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: Text(formattedDate),
+                        return Container(
+                          decoration: BoxDecoration(
+                            color: Color.fromARGB(255, 189, 218, 190),
+                            border: Border.all(color: Colors.black),
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          padding: const EdgeInsets.all(8.0),
+                          margin: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: ListView(
+                            // Wrap the content in a ListView
+                            shrinkWrap:
+                                true, // Ensures that the ListView takes up as little space as possible
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: List.generate(6, (index) {
+                                      final currentDate = DateTime.now();
+                                      final nextDate = currentDate
+                                          .add(Duration(days: index));
+                                      final formattedDate =
+                                          "${nextDate.day.toString().padLeft(2, '0')}/${nextDate.month.toString().padLeft(2, '0')}";
+                                      return Container(
+                                        padding: const EdgeInsets.all(10.0),
+                                        child: Text(formattedDate),
+                                      );
+                                    }),
+                                  ),
+                                  ...subList.map((element) {
+                                    localElements.add(element);
+
+                                    return FutureBuilder<List<String>>(
+                                      future:
+                                          WeatherUtil.getWeatherData(element),
+                                      builder: (context, snapshot) {
+                                        if (snapshot.connectionState ==
+                                            ConnectionState.waiting) {
+                                          return Text(
+                                              "Fetching weather data for $element...");
+                                        } else if (snapshot.hasError) {
+                                          return Text(
+                                              "Error fetching weather data for $element: ${snapshot.error}");
+                                        } else if (snapshot.hasData) {
+                                          final city = element;
+                                          final iconIds = snapshot.data!;
+
+                                          return Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(city),
+                                              const SizedBox(height: 10),
+                                              Row(
+                                                children: iconIds.map((iconId) {
+                                                  return Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            9.5),
+                                                    child: GestureDetector(
+                                                      onTap: () {
+                                                        showDialog(
+                                                          context: context,
+                                                          builder: (context) {
+                                                            return Center(
+                                                              child:
+                                                                  GestureDetector(
+                                                                onTap: () {
+                                                                  Navigator.of(
+                                                                          context)
+                                                                      .pop();
+                                                                },
+                                                                child: Image
+                                                                    .network(
+                                                                  'https://openweathermap.org/img/wn/$iconId.png',
+                                                                  width: 900,
+                                                                  height: 900,
+                                                                ),
+                                                              ),
+                                                            );
+                                                          },
+                                                        );
+                                                      },
+                                                      child: Image.network(
+                                                        'https://openweathermap.org/img/wn/$iconId.png',
+                                                        width: 40,
+                                                        height: 40,
+                                                        errorBuilder: (context,
+                                                            error, stackTrace) {
+                                                          return const Icon(
+                                                              Icons.error);
+                                                        },
+                                                      ),
+                                                    ),
+                                                  );
+                                                }).toList(),
+                                              ),
+                                            ],
+                                          );
+                                        } else {
+                                          return Text(
+                                              "No weather data available for $element");
+                                        }
+                                      },
                                     );
                                   }),
+                                ],
+                              ),
+                              ElevatedButton(
+                                onPressed: () async {
+                                  final planName =
+                                      await _getNameFromUser(context);
+                                  if (planName != null) {
+                                    // Use planName to save the list in Firestore
+                                    final myList = [
+                                      'item1',
+                                      'item2'
+                                    ]; // Replace with your list
+                                    saveListToFirestore(
+                                        planName, localElements);
+                                  }
+                                  await clearSelectedCities();
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  primary: Colors
+                                      .blue, // Background color of the button
+                                  onPrimary: Colors.white, // Text color
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 16.0,
+                                      vertical:
+                                          12.0), // Padding around the button's content
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                        10.0), // Rounded corners
+                                  ),
                                 ),
-                                ...subList.map((element) {
-                                  localElements.add(element);
-
-                                  return FutureBuilder<List<String>>(
-                                    future: WeatherUtil.getWeatherData(element),
-                                    builder: (context, snapshot) {
-                                      if (snapshot.connectionState ==
-                                          ConnectionState.waiting) {
-                                        return Text(
-                                            "Fetching weather data for $element...");
-                                      } else if (snapshot.hasError) {
-                                        return Text(
-                                            "Error fetching weather data for $element: ${snapshot.error}");
-                                      } else if (snapshot.hasData) {
-                                        final city = element;
-                                        final iconIds = snapshot.data!;
-
-                                        return Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(city),
-                                            const SizedBox(height: 10),
-                                            Row(
-                                              children: iconIds.map((iconId) {
-                                                return Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(9.5),
-                                                  child: GestureDetector(
-                                                    onTap: () {
-                                                      showDialog(
-                                                        context: context,
-                                                        builder: (context) {
-                                                          return Center(
-                                                            child:
-                                                                GestureDetector(
-                                                              onTap: () {
-                                                                Navigator.of(
-                                                                        context)
-                                                                    .pop();
-                                                              },
-                                                              child:
-                                                                  Image.network(
-                                                                'https://openweathermap.org/img/wn/$iconId.png',
-                                                                width: 900,
-                                                                height: 900,
-                                                              ),
-                                                            ),
-                                                          );
-                                                        },
-                                                      );
-                                                    },
-                                                    child: Image.network(
-                                                      'https://openweathermap.org/img/wn/$iconId.png',
-                                                      width: 40,
-                                                      height: 40,
-                                                      errorBuilder: (context,
-                                                          error, stackTrace) {
-                                                        return const Icon(
-                                                            Icons.error);
-                                                      },
-                                                    ),
-                                                  ),
-                                                );
-                                              }).toList(),
-                                            ),
-                                          ],
-                                        );
-                                      } else {
-                                        return Text(
-                                            "No weather data available for $element");
-                                      }
-                                    },
-                                  );
-                                }),
-                              ],
-                            ),
+                                child: Text(
+                                  'Save Your Plan',
+                                  style: TextStyle(
+                                    fontSize: 18.0, // Text size
+                                  ),
+                                ),
+                              )
+                            ],
                           ),
                         );
                       }).toList(),
