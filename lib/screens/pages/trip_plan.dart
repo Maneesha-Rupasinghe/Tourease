@@ -4,8 +4,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:tourease/screens/pages/weather_util.dart';
-import 'package:tourease/google_map_services/get_distance_duration.dart';
 import 'package:tourease/google_map_services/draw_path.dart';
+import 'package:tourease/google_map_services/get_distance_duration.dart';
+import 'package:tourease/google_map_services/test.dart';
 
 class tripPlan extends StatefulWidget {
   const tripPlan({Key? key}) : super(key: key);
@@ -19,12 +20,12 @@ class _tripPlanState extends State<tripPlan> {
     [1.0, 2.0],
     [3.0, 4.0],
   ];
+  //DistanceAndDuration distanceAndDuration = DistanceAndDuration();
   List<String> destination = [];
   List<List<String>> _result = [];
   late DateTime fromDate = DateTime.now();
   late DateTime toDate = DateTime.now();
-
-  final distanceDuration = DistanceAndDuration();
+  List<String> localElements = []; // Define it at the class level
 
   Future<void> _selectDate1(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -196,12 +197,13 @@ class _tripPlanState extends State<tripPlan> {
                 ),
                 SingleChildScrollView(
                   child: SizedBox(
-                    height: 500,
+                    height: MediaQuery.of(context).size.height,
                     child: PageView(
                       scrollDirection: Axis.horizontal,
                       children: _result.map((subList) {
                         // Create a local list to store elements from subList
-                        List<String> localElements = [];
+                        localElements
+                            .clear(); // Clear the list for each subList
 
                         return Container(
                           width: MediaQuery.of(context).size.width,
@@ -279,37 +281,48 @@ class _tripPlanState extends State<tripPlan> {
                                   },
                                 );
                               }),
-                              // Display the elements from the localElements list
-                              //for (var element in localElements) Text(element),
-                              // FutureBuilder<String>(
-                              //   future: distanceDuration
-                              //       .calculateTotalDistanceAndDuration(
-                              //           localElements),
-                              //   builder: (context, snapshot) {
-                              //     if (snapshot.connectionState ==
-                              //         ConnectionState.waiting) {
-                              //       return CircularProgressIndicator(); // or any other loading indicator
-                              //     } else if (snapshot.hasError) {
-                              //       return Text("Error: ${snapshot.error}");
-                              //     } else if (snapshot.hasData) {
-                              //       // Data has been received, so display it
-                              //       return Text(snapshot.data!);
-                              //     } else {
-                              //       return Text("No data available");
-                              //     }
-                              //   },
-                              // )
+
+                              FutureBuilder<String>(
+                                future: calculateTotalDistanceAndDuration(
+                                    localElements),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.done) {
+                                    if (snapshot.hasData) {
+                                      // print(localElements);
+                                      return Text(snapshot.data!);
+                                    } else if (snapshot.hasError) {
+                                      return Text('Error: ${snapshot.error}');
+                                    }
+                                  }
+                                  return const CircularProgressIndicator(); // Or some other loading indicator
+                                },
+                              ),
                               ElevatedButton(
                                 onPressed: () {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(builder: (context) {
+                                      print(localElements);
                                       return DrawPath(places: localElements);
                                     }),
                                   );
                                 },
-                                child: Text('Draw Path'),
+                                child: const Text('Draw Path'),
                               ),
+                              // Container(
+                              //   width: 100,
+                              //   height: 60,
+                              //   color: Colors.amber,
+                              //   child: ListView.builder(
+                              //     itemCount: localElements.length,
+                              //     itemBuilder: (context, index) {
+                              //       return Text(localElements[index]);
+                              //     },
+                              //   ),
+                              // ),
+                              // Display the elements from the localElements list
+                              for (var element in localElements) Text(element),
                             ],
                           ),
                         );
