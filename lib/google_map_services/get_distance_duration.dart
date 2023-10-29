@@ -1,13 +1,5 @@
 import 'location_service/location_service.dart';
 
-// List<String> places = [
-//     "Colombo",
-//     "Kurunegala",
-//     "Anuradhapura",
-//     "Trincomalee",
-//     "jaffna"
-//   ];
-
 class DistanceAndDuration {
   Map<String, String> distanceMap = {}; // Store distances
   Map<String, String> durationMap = {}; // Store durations
@@ -16,9 +8,6 @@ class DistanceAndDuration {
   List<Future<void>> loadPlaceFutures = [];
 
   Future<String> calculateTotalDistanceAndDuration(List<String> places) async {
-    int totalDistance = 0;
-    int totalDuration = 0;
-
     // Create a list of Futures for all the _loadPlace calls
 
     for (var i = 0; i < places.length - 1; i++) {
@@ -28,10 +17,12 @@ class DistanceAndDuration {
     // Wait for all the asynchronous calls to complete
     await Future.wait(loadPlaceFutures);
 
-    // All calls have completed, now you can access the totalDistance and totalDuration
-    print(totalDistance);
-    print(totalDuration);
-    return totalDistance.toString();
+    // Calculate totalDuration in hours and minutes
+    int totalMinutes = totalDuration;
+    int hours = totalMinutes ~/ 60;
+    int minutes = totalMinutes % 60;
+
+    return 'Total Distance: $totalDistance km\nTotal Duration: $hours hours and $minutes minutes';
   }
 
   Future<void> _loadPlace(String input1, String input2) async {

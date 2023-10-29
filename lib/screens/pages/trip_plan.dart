@@ -6,8 +6,10 @@ import 'package:http/http.dart' as http;
 import 'package:tourease/google_map_services/location_service/location_service.dart';
 import 'package:tourease/screens/pages/userProfile.dart';
 import 'package:tourease/screens/pages/weather_util.dart';
+import 'package:tourease/google_map_services/draw_path.dart';
 import 'package:tourease/google_map_services/get_distance_duration.dart';
 import 'package:intl/intl.dart';
+import 'package:tourease/google_map_services/test.dart';
 
 class tripPlan extends StatefulWidget {
   const tripPlan({Key? key}) : super(key: key);
@@ -21,11 +23,13 @@ class _tripPlanState extends State<tripPlan> {
     [1.0, 2.0],
     [3.0, 4.0],
   ];
+  //DistanceAndDuration distanceAndDuration = DistanceAndDuration();
   List<String> destination = [];
   List<List<String>> _result = [];
   late DateTime fromDate = DateTime.now();
   late DateTime toDate = DateTime.now();
   double tappedIconSize = 40;
+  List<String> localElements = [];
 
   String? totalDistanceAndDuration;
   final TextEditingController startCityController = TextEditingController();
@@ -496,7 +500,8 @@ class _tripPlanState extends State<tripPlan> {
                     print(destination);
                     sendMatricesToCloudFunction(distance, destination);
                   },
-                  style: ElevatedButton.styleFrom(
+               
+style: ElevatedButton.styleFrom(
                     primary: Colors.blue, // Background color of the button
                     onPrimary: Colors.white, // Text color
                     padding: const EdgeInsets.all(
@@ -518,7 +523,6 @@ class _tripPlanState extends State<tripPlan> {
                 const SizedBox(
                   height: 10,
                 ),
-
                 // Display the result as a list (matrix)
                 // if (_result.isNotEmpty) // Check if the result is not empty
                 //   Column(
@@ -564,14 +568,17 @@ class _tripPlanState extends State<tripPlan> {
 
                 SingleChildScrollView(
                   child: SizedBox(
-                    height: 500,
+                    height: MediaQuery.of(context).size.height,
                     child: PageView(
                       scrollDirection: Axis.horizontal,
                       children: _result.map((subList) {
                         // Create a local list to store elements from subList
-                        List<String> localElements = [];
+                        localElements
+                            .clear(); // Clear the list for each subList
 
                         return Container(
+                          width: MediaQuery.of(context).size.width,
+                          height: MediaQuery.of(context).size.height,
                           decoration: BoxDecoration(
                             color: Color.fromARGB(255, 189, 218, 190),
                             border: Border.all(color: Colors.black),
@@ -603,20 +610,19 @@ class _tripPlanState extends State<tripPlan> {
                                   ...subList.map((element) {
                                     localElements.add(element);
 
-                                    return FutureBuilder<List<String>>(
-                                      future:
-                                          WeatherUtil.getWeatherData(element),
-                                      builder: (context, snapshot) {
-                                        if (snapshot.connectionState ==
-                                            ConnectionState.waiting) {
-                                          return Text(
-                                              "Fetching weather data for $element...");
-                                        } else if (snapshot.hasError) {
-                                          return Text(
-                                              "Error fetching weather data for $element: ${snapshot.error}");
-                                        } else if (snapshot.hasData) {
-                                          final city = element;
-                                          final iconIds = snapshot.data!;
+                                return FutureBuilder<List<String>>(
+                                  future: WeatherUtil.getWeatherData(element),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.waiting) {
+                                      return Text(
+                                          "Fetching weather data for $element...");
+                                    } else if (snapshot.hasError) {
+                                      return Text(
+                                          "Error fetching weather data for $element: ${snapshot.error}");
+                                    } else if (snapshot.hasData) {
+                                      final city = element;
+                                      final iconIds = snapshot.data!;
 
                                           return Column(
                                             crossAxisAlignment:
