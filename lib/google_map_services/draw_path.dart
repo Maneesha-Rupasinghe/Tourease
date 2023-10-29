@@ -112,7 +112,7 @@ class DrawPathState extends State<DrawPath> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Selected Route'),
-        backgroundColor: Colors.blueGrey.shade700,
+        backgroundColor: Colors.blue,
       ),
       body: Stack(
         children: [

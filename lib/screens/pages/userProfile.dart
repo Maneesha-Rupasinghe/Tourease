@@ -5,8 +5,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:tourease/screens/authentication/login.dart';
 import 'package:tourease/screens/pages/my_plans.dart';
+import 'package:tourease/services/auth.dart';
+import 'package:tourease/screens/authentication/login.dart';
+import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({Key? key}) : super(key: key);
@@ -17,6 +24,14 @@ class EditProfilePage extends StatefulWidget {
 }
 
 class _EditProfilePageState extends State<EditProfilePage> {
+  //final User? user = FirebaseAuth.instance.currentUser;
+  //final firestore = FirebaseFirestore.instance;
+  //List<DocumentSnapshot> userPlans = [];
+  String? userName;
+  final User? user = FirebaseAuth.instance.currentUser;
+  final firestore = FirebaseFirestore.instance;
+  List<DocumentSnapshot> userPlans = [];
+  final AuthServices _auth = AuthServices();
   final TextEditingController _fnameController = TextEditingController();
   final TextEditingController _lnameController = TextEditingController();
   final TextEditingController _mobileNumberController = TextEditingController();
@@ -29,7 +44,71 @@ class _EditProfilePageState extends State<EditProfilePage> {
   @override
   void initState() {
     super.initState();
+    if (user != null) {
+      clearFirestoreCache(); // Clear Firestore cache
+      fetchUserPlans();
+    }
     fetchUserData();
+    fetchUserName();
+  }
+
+  Future<void> fetchUserName() async {
+    final userDoc = firestore.collection('users').doc(user!.uid);
+    final userSnapshot = await userDoc.get();
+
+    if (userSnapshot.exists) {
+      final userData = userSnapshot.data() as Map<String, dynamic>;
+      setState(() {
+        userName = '${userData['firstName']} ${userData['lastName']}';
+      });
+    }
+  }
+
+  Future<void> clearFirestoreCache() async {
+    await FirebaseFirestore.instance.clearPersistence();
+  }
+
+  Future<void> fetchUserPlans() async {
+    final userDoc = firestore.collection('users').doc(user!.uid);
+    final userPlansCollection = userDoc.collection('user_plans');
+    final userPlansSnapshot = await userPlansCollection.get();
+
+    setState(() {
+      userPlans = userPlansSnapshot.docs;
+    });
+  }
+
+  Future<void> _showPlanDetails(DocumentSnapshot plan) async {
+    final data = plan.data() as Map<String, dynamic>;
+
+    // Extract the "your_list_field_name" from the document data
+    final planName = data['your_list_field_name'];
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        final destinations = (planName as List).join(' -> ');
+        return AlertDialog(
+          title: Text('Plan Details'),
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Destination: $destinations'),
+              // Add more details here if needed
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> _selectImage() async {
@@ -122,116 +201,159 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Edit Profile'),
+    return Container(
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/homeBack.jpg'),
+          fit: BoxFit.cover,
+        ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Center(
-          child: SingleChildScrollView(
-            child: Column(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Column(
+          children: [
+            const SizedBox(
+              height: 50,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                GestureDetector(
-                  onTap: () {
-                    _selectImage();
-                  },
-                  child: ClipOval(
-                    child: Container(
-                      width: 150,
-                      height: 150,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        image: DecorationImage(
-                          image: profilePictureURL != null
-                              ? NetworkImage(profilePictureURL!)
-                              : (_imageFile != null
-                                  ? FileImage(_imageFile!)
-                                      as ImageProvider<Object>
-                                  : const AssetImage(
-                                      'assets/placeholder.webp')),
-                          fit: BoxFit.cover,
+                const SizedBox(
+                  width: 145,
+                ),
+                Container(
+                  alignment: Alignment.center,
+                  child: Row(children: [
+                    Text(
+                      'Profile',
+                      style: GoogleFonts.signika(
+                        textStyle: const TextStyle(
+                          fontSize: 35,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
                         ),
+                      ),
+                    ),
+                  ]),
+                ),
+                const SizedBox(
+                  width: 90,
+                ),
+                IconButton(
+                  icon: const Icon(Icons.logout_outlined),
+                  iconSize: 30,
+                  onPressed: () async {
+                    await _auth.signOut();
+                  },
+                )
+              ],
+            ),
+            GestureDetector(
+              onTap: () {
+                _selectImage();
+              },
+              child: ClipOval(
+                child: Center(
+                  child: Container(
+                    width: 150,
+                    height: 150,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      image: DecorationImage(
+                        image: profilePictureURL != null
+                            ? NetworkImage(profilePictureURL!)
+                            : (_imageFile != null
+                                ? FileImage(_imageFile!)
+                                    as ImageProvider<Object>
+                                : const AssetImage('assets/placeholder.webp')),
+                        fit: BoxFit.cover,
                       ),
                     ),
                   ),
                 ),
-                
-
-
-
-                GestureDetector(
-      onTap: () {
-        // Navigate to another page when the container is tapped
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => MyPlans()),
-        );
-      },
-      child: Container(
-        width: 200,
-        height: 100,
-        decoration: BoxDecoration(
-          color: Colors.blue,
-          borderRadius: BorderRadius.circular(10.0),
-        ),
-        child: Center(
-          child: Text(
-            'Tap to Navigate',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 18,
+              ),
             ),
-          ),
-        ),
-      ),
-    ),
-  
-                const SizedBox(height: 16.0),
-                TextFormField(
-                  controller: _fnameController,
-                  decoration: const InputDecoration(
-                    labelText: 'First Name',
-                    border: OutlineInputBorder(),
-                    hintText: 'Enter your first name',
-                  ),
-                ),
-                const SizedBox(height: 16.0),
-                TextFormField(
-                  controller: _lnameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Last Name',
-                    border: OutlineInputBorder(),
-                    hintText: 'Enter your last name',
-                  ),
-                ),
-                const SizedBox(height: 16.0),
-                TextFormField(
-                  controller: _mobileNumberController,
-                  decoration: const InputDecoration(
-                    labelText: 'Mobile Number',
-                    border: OutlineInputBorder(),
-                    hintText: 'Enter your mobile number',
-                  ),
-                ),
-                const SizedBox(height: 16.0),
-                TextFormField(
-                  controller: _addressController,
-                  maxLines: 3,
-                  decoration: const InputDecoration(
-                    labelText: 'Address',
-                    border: OutlineInputBorder(),
-                    hintText: 'Enter your address',
-                  ),
-                ),
-                const SizedBox(height: 32.0),
-                ElevatedButton(
-                  onPressed: _uploadProfileImageAndSaveChanges,
-                  child: const Text('Save Changes'),
-                ),
-              ],
+            SizedBox(
+              height: 5,
             ),
-          ),
+            if (userName != null)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    width: 115,
+                  ),
+                  Text(
+                    ' $userName',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.edit_square),
+                    iconSize: 25,
+                    onPressed: () {
+                      // Navigate to the tripPlan screen
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return EditProfile2();
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10.0),
+                color: Color.fromARGB(171, 255, 255, 255),
+              ),
+              margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+              child: Column(
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      "Recent Plans", // Add the text here
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: double.infinity, // Adjust the width as needed
+                    height: 400,
+                    child: userPlans.isNotEmpty
+                        ? ListView.builder(
+                            itemCount: userPlans.length,
+                            itemBuilder: (context, index) {
+                              final plan = userPlans[index];
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical:
+                                        5.0), // Adjust the vertical spacing as needed
+                                child: Card(
+                                  elevation: 3,
+                                  margin: EdgeInsets.symmetric(
+                                      vertical: 0, horizontal: 30),
+                                  child: ListTile(
+                                    title: Text('Plan ${index + 1}'),
+                                    tileColor: Colors.white,
+                                    onTap: () => _showPlanDetails(plan),
+                                  ),
+                                ),
+                              );
+                            },
+                          )
+                        : const Center(
+                            child: Text('You have no plans.'),
+                          ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );

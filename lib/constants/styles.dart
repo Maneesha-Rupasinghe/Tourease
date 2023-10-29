@@ -35,20 +35,20 @@ const TextStyle signInRegisterText3 = TextStyle(
 );
 
 const textInputdecorataion = InputDecoration(
-  hintText: "email",
+  hintText: "Email",
   hintStyle: TextStyle(color: emailPasswordFillText, fontSize: 15),
   fillColor: emailPasswordFill,
   filled: true,
   enabledBorder: OutlineInputBorder(
     borderSide: BorderSide(color: emailPasswordFillBorder, width: 1),
     borderRadius: BorderRadius.all(
-      Radius.circular(100),
+      Radius.circular(20),
     ),
   ),
   focusedBorder: OutlineInputBorder(
     borderSide: BorderSide(color: emailPasswordFillBorder, width: 1),
     borderRadius: BorderRadius.all(
-      Radius.circular(100),
+      Radius.circular(20),
     ),
   ),
 );

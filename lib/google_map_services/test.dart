@@ -25,11 +25,3 @@ Future<String> calculateTotalDistanceAndDuration(List<String> places) async {
 
   return 'Total Distance: $totalDistance km\nTotal Duration: $hours hours and $minutes minutes';
 }
-
-void main() async {
-  List<String> places = [];
-
-  String result = await calculateTotalDistanceAndDuration(places);
-
-  print(result);
-}
