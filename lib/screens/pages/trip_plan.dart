@@ -289,7 +289,7 @@ class _tripPlanState extends State<tripPlan> {
                                   if (snapshot.connectionState ==
                                       ConnectionState.done) {
                                     if (snapshot.hasData) {
-                                      // print(localElements);
+                                      //print(localElements);
                                       return Text(snapshot.data!);
                                     } else if (snapshot.hasError) {
                                       return Text('Error: ${snapshot.error}');
@@ -303,7 +303,6 @@ class _tripPlanState extends State<tripPlan> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(builder: (context) {
-                                      print(localElements);
                                       return DrawPath(places: localElements);
                                     }),
                                   );
@@ -322,7 +321,6 @@ class _tripPlanState extends State<tripPlan> {
                               //   ),
                               // ),
                               // Display the elements from the localElements list
-                              for (var element in localElements) Text(element),
                             ],
                           ),
                         );
