@@ -94,41 +94,44 @@ class placesScreen extends StatelessWidget {
                           ),
                         ),
                         SizedBox(height: 25,),
-                        SizedBox(
-                          height: 300,
-                          width: 200,
-                          child: Image.network(data['featured_image']),
-                        )
+                        ClipRRect(
+                            borderRadius: BorderRadius.circular(15.0),
+                            // Adjust the radius as needed
+                            child: Positioned(
+                              left: 30,
+                              right: 30,
+                              top: 30,
+                              child: Image.network(data['featured_image'],fit: BoxFit.cover,),
+                            )
+                        ),
+
 
                       ],
                     ),
                   ),
-                  Container(
-
-                    child: Positioned(
-                        left: 100,
-                        right: 100,
-                        bottom: 20,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(15.0),
-                          // Adjust the radius as needed
-                          child: ElevatedButton(
-                            onPressed: () {
-                              // Handle button press
-                            },
-                            child: Text(
-                              'ADD TO PLAN',
-                              style: GoogleFonts.signika(
-                                textStyle: const TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
+                  Positioned(
+                      left: 100,
+                      right: 100,
+                      bottom: 20,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(15.0),
+                        // Adjust the radius as needed
+                        child: ElevatedButton(
+                          onPressed: () {
+                            // Handle button press
+                          },
+                          child: Text(
+                            'ADD TO PLAN',
+                            style: GoogleFonts.signika(
+                              textStyle: const TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
                               ),
                             ),
                           ),
-                        )
-                    ),
+                        ),
+                      )
                   ),
                 ],
               )
