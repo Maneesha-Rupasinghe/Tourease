@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
       initialData: UserModel(uid: ""),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: DestinationPage('colombo'),//placesScreen(collectionName: 'lotus tower', documentName: 'colombo'),
+        home: DestinationPage('colombo')//placesScreen(collectionName: 'lotus tower', documentName: 'colombo'),
       ),
     );
   }
